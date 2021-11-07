@@ -28,12 +28,11 @@ ENV PATH="/.venv/bin:$PATH"
 # Install application into container
 COPY . .
 
-# Change the ownership of the directory to appuser
-RUN chmod -R 777 /home/appuser/home_guardian
-
 # Create and switch to a new user
 RUN useradd --create-home appuser
 WORKDIR /home/appuser
+# Change directory permission
+RUN chmod -R 777 /home/appuser/home_guardian
 USER appuser
 
 # Run the executable
