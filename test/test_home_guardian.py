@@ -1,4 +1,4 @@
-from home_guardian.home_guardian import fib
+from home_guardian.function_collection import fib
 
 
 def test_fib() -> None:
