@@ -34,7 +34,7 @@ jobs:
       - run: pipenv run flake8
       - run: pipenv run mypy
       - name: Python tests with pytest
-        run: pipenv run pytest --cov --cov-fail-under=100
+        run: pipenv run pytest --cov
 
   docker-test:
     runs-on: ubuntu-latest

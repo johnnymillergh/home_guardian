@@ -7,6 +7,7 @@ class User(BaseModel):
     """
     User model for testing peewee
     """
+
     username = CharField(unique=True)
     created_time = DateTimeField(null=False)
 

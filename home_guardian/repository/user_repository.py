@@ -8,7 +8,7 @@ log = logging.getLogger("rotatingFileLogger")
 def create_user(username: str) -> User:
     """
     Creates a new user.
-    :param username: username
+    :param username: usernameasdf
     :return: a user
     """
     a_user = User.create(username=username, created_time="2019-01-01 00:00:00")
