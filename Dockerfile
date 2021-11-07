@@ -34,7 +34,7 @@ USER appuser
 COPY . .
 
 # Change the ownership of the directory to appuser
-RUN chown appuser /home/appuser/home_guardian
+RUN chmod -R 777 /home/appuser/home_guardian
 
 # Run the executable
 ENTRYPOINT ["python", "-m", "home_guardian"]
