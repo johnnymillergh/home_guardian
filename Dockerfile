@@ -25,16 +25,16 @@ FROM base AS runtime
 COPY --from=python-deps /.venv /.venv
 ENV PATH="/.venv/bin:$PATH"
 
-# Create and switch to a new user
-RUN useradd --create-home appuser
-WORKDIR /home/appuser
-USER appuser
-
 # Install application into container
 COPY . .
 
 # Change the ownership of the directory to appuser
 RUN chmod -R 777 /home/appuser/home_guardian
+
+# Create and switch to a new user
+RUN useradd --create-home appuser
+WORKDIR /home/appuser
+USER appuser
 
 # Run the executable
 ENTRYPOINT ["python", "-m", "home_guardian"]
