@@ -1,11 +1,14 @@
-from peewee import Model, SqliteDatabase
+import logging
 
+from peewee import Model, SqliteDatabase
 from home_guardian.function_collection import get_root_path
 
-base_dir = get_root_path()
-print(f"base_dir: {base_dir}")
-db = SqliteDatabase(f"{base_dir}/home_guardian.db")
-print(f"Initialized db file: {db}")
+log = logging.getLogger("rotatingFileLogger")
+
+db_path = f"{get_root_path()}/home_guardian.db"
+log.info(f"SQLite database path: {db_path}")
+db = SqliteDatabase(db_path)
+log.info(f"Initialized db file: {db}")
 
 
 class BaseModel(Model):
