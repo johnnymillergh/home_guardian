@@ -33,6 +33,9 @@ USER appuser
 # Install application into container
 COPY . .
 
+# Change the ownership of the directory to appuser
+RUN chown appuser /home/appuser/home_guardian
+
 # Run the executable
 ENTRYPOINT ["python", "-m", "home_guardian"]
 CMD ["10"]
