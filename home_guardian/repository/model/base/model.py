@@ -1,9 +1,9 @@
 from loguru import logger
 from peewee import Model, SqliteDatabase
 
-from home_guardian.function_collection import get_root_path
+from home_guardian.function_collection import get_data_dir
 
-db_path = f"{get_root_path()}/home_guardian.db"
+db_path = f"{get_data_dir()}/home_guardian.db"
 logger.info(f"SQLite database path: {db_path}")
 db = SqliteDatabase(db_path)
 logger.info(f"Initialized db file: {db}")
