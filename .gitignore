@@ -3,6 +3,8 @@
 
 ### Project ###
 *.db
+*.gz
+logs/
 
 ### PyCharm ###
 .idea

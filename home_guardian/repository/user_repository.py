@@ -1,16 +1,17 @@
-import logging
+from datetime import datetime
+
+from loguru import logger
 
 from home_guardian.repository.model.user import User
 
-log = logging.getLogger("rotatingFileLogger")
 
-
+@logger.catch
 def create_user(username: str) -> User:
     """
     Creates a new user.
     :param username: usernameasdf
     :return: a user
     """
-    a_user = User.create(username=username, created_time="2019-01-01 00:00:00")
-    log.info(f"Created, a_user = {a_user}")
+    a_user = User.create(username=username, created_time=datetime.now())
+    logger.info(f"Created, a_user = {a_user}")
     return a_user
