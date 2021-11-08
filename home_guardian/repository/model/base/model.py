@@ -6,7 +6,7 @@ from home_guardian.function_collection import get_data_dir
 db_path = f"{get_data_dir()}/home_guardian.db"
 logger.info(f"SQLite database path: {db_path}")
 db = SqliteDatabase(db_path)
-logger.info(f"Initialized db file: {db}")
+logger.warning(f"Initialized db file: {db}")
 
 
 class BaseModel(Model):
