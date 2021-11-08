@@ -17,3 +17,14 @@ def get_data_dir() -> str:
     data_dir = f"{get_root_path()}/_data"
     os.makedirs(data_dir, exist_ok=True)
     return data_dir
+
+
+def get_cpu_count() -> int:
+    """
+    Get CPU count, default is 4
+    """
+    cpu_count = os.cpu_count()
+    if cpu_count is not None:
+        return cpu_count
+    else:
+        return 4
