@@ -9,7 +9,7 @@ from home_guardian.repository.model.user import User
 def create_user(username: str) -> User:
     """
     Creates a new user.
-    :param username: usernameasdf
+    :param username: username
     :return: a user
     """
     a_user = User.create(username=username, created_time=datetime.now())
