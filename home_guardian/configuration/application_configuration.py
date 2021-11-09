@@ -13,6 +13,4 @@ def configure() -> None:
     """
     Configure application.
     """
-    logger.warning(
-        f"Application configuration loaded, {application_conf}, mail_password: {application_conf.get_string('email.mail_password')}"
-    )
+    logger.warning(f"Application configuration loaded, {application_conf}")
