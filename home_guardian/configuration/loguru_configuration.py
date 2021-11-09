@@ -3,6 +3,8 @@ import sys
 
 from loguru import logger
 
+from home_guardian.function_collection import get_data_dir
+
 message_format = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
     "<level>{level: <8}</level> | "
@@ -14,7 +16,7 @@ print(f"message_format: {message_format}")
 # Remove a previously added handler and stop sending logs to its sink.
 logger.remove(handler_id=None)
 # Set up logging
-log_file = "logs/home_guardian.{time}.log"
+log_file = get_data_dir() + "/logs/home_guardian.{time}.log"
 logger.add(
     log_file,
     level="DEBUG",
