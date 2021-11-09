@@ -5,7 +5,7 @@
 *.db
 *.gz
 logs/
-_data/
+data/
 
 ### PyCharm ###
 .idea

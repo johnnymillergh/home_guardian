@@ -14,7 +14,7 @@ def get_data_dir() -> str:
     """
     Get the data directory of the project.
     """
-    data_dir = f"{get_root_path()}/_data"
+    data_dir = f"{get_root_path()}/data"
     os.makedirs(data_dir, exist_ok=True)
     return data_dir
 
