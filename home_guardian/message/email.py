@@ -36,7 +36,7 @@ def build_message(receiver: str) -> MIMEMultipart:
     return message
 
 
-def send_email():
+def send_email() -> None:
     smtp: smtplib.SMTP = smtplib.SMTP(mail_host, 25)
     smtp.connect(mail_host, 25)
     smtp.login(sender, mail_password)

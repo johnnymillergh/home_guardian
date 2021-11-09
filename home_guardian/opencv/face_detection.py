@@ -8,6 +8,7 @@ from loguru import logger
 from home_guardian.common.debounce_throttle import throttle
 from home_guardian.configuration.thread_pool_configuration import executor
 from home_guardian.function_collection import get_data_dir, get_resources_dir
+from home_guardian.repository.detected_face_repository import save
 
 detected_face_dir = f"{get_data_dir()}/detection"
 os.makedirs(detected_face_dir, exist_ok=True)
@@ -37,10 +38,20 @@ def detect_and_take_photo() -> None:
 
 @throttle(2)
 def save_capture(frame) -> None:
+    logger.debug(f"type of frame: {type(frame)}")
     executor.submit(async_save_capture, frame)
 
 
+@logger.catch
 def async_save_capture(frame) -> None:
-    file_name = f"{get_data_dir()}/detection/detected_face_{datetime.datetime.now().__str__().replace(':', '_')}.jpeg"
-    cv2.imwrite(file_name, frame)
-    logger.info("Saved image to: {}", file_name)
+    picture_path = (
+        f"{get_data_dir()}/detection"
+        f"/detected_face_{datetime.datetime.now().__str__().replace(':', '_')}.jpeg"
+    )
+    cv2.imwrite(picture_path, frame)
+    detected_face = save(picture_path)
+    logger.info(
+        "Saved picture, picture_path: {}, detected_face: {}",
+        picture_path,
+        detected_face,
+    )
