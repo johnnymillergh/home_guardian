@@ -1,8 +1,39 @@
-import asyncio
+from threading import Timer
 from time import time
 
+from loguru import logger
 
-class Setter:
+
+def debounce(interval: float):
+    """
+    Decorator that will postpone a functions
+    execution until after wait seconds
+    have elapsed since the last time it was invoked.
+
+    @param interval: interval time in seconds
+    @see https://gist.github.com/walkermatt/2871026
+    """
+
+    def decorator(fn):
+        def debounced(*args, **kwargs):
+            def call_it():
+                fn(*args, **kwargs)
+                logger.debug(f"Called debounced function: {fn}")
+
+            try:
+                debounced.t.cancel()
+                logger.debug(f"Cancelled calling debounced function: {fn}")
+            except AttributeError:
+                pass
+            debounced.t = Timer(interval, call_it)
+            debounced.t.start()
+
+        return debounced
+
+    return decorator
+
+
+class Wrapper:
     def __init__(self, initial_value=None) -> None:
         self._value = initial_value
 
@@ -13,63 +44,32 @@ class Setter:
         self._value = v
 
 
-def debounce(delay):
-    """
-    Debounce decorator.
-
-    @see Python 中的防抖与节流 https://www.bilibili.com/read/cv13257868
-    """
-
-    # 用于存储 asyncio.Task 实例，这里是闭包
-    task = Setter()
-
-    def decorator(fn):
-        # Task 协程函数
-        async def f(*args, **kwargs):
-            # 进行休眠
-            await asyncio.sleep(delay)
-            # 调用函数
-            f1 = fn(*args, **kwargs)
-            # 支持回调函数是异步函数的情况
-            if asyncio.iscoroutine(f1):
-                await f1
-            # 清除 task
-            task.set(None)
-
-        def wrapper(*args, **kwargs):
-            # 如果 task 存在，说明在 delay 秒内调用过一次函数，此次调用应当重置计时器，因此取消先前的 Task
-            if task.get() is not None:
-                task.get().cancel()
-            # 创建 Task 并赋值变量 task
-            task.set(asyncio.create_task(f(*args, **kwargs)))
-
-        return wrapper
-
-    return decorator
-
-
-def throttle(delay):
+def throttle(interval: float):
     """
     Throttle decorator.
 
+    @param interval: interval time in seconds
+    @see Python 中的防抖与节流 https://www.bilibili.com/read/cv13257868/
     @see Python 中的防抖与节流 https://www.moyu.moe/articles/25/
     """
 
     # 下一次许可调用的时间，初始化为 0
-    next_t = Setter(0)
+    next_t = Wrapper(0)
 
     def decorator(fn):
-        def wrapper(*args, **kwargs):
+        def throttled(*args, **kwargs):
             # 当前时间
             now = time()
             # 若未到下一次许可调用的时间，直接返回
             if next_t.get() > now:
+                logger.debug(f"Skipped throttled call, function: {fn}")
                 return
             # 更新下一次许可调用的时间
-            next_t.set(now + delay)
+            next_t.set(now + interval)
             # 调用函数并返回
+            logger.debug(f"Called throttled function: {fn}")
             return fn(*args, **kwargs)
 
-        return wrapper
+        return throttled
 
     return decorator
