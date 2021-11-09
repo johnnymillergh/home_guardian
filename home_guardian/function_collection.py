@@ -19,6 +19,13 @@ def get_data_dir() -> str:
     return data_dir
 
 
+def get_resources_dir() -> str:
+    """
+    Get the resources directory of the project.
+    """
+    return f"{get_root_path()}/resources"
+
+
 def get_cpu_count() -> int:
     """
     Get CPU count, default is 4

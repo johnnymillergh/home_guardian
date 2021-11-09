@@ -7,12 +7,13 @@ from typing import List
 
 from loguru import logger
 
-# Email constants
-mail_host: str = "smtp.sina.com"
-mail_user: str = "johnnys_rpi_3b"
-authorization_password: str = "dcbc7bdd4cb11187"
-sender: str = f"{mail_user}@sina.com"
-receivers: List[str] = ["johnnysviva@outlook.com", "tewis1992@yahoo.com"]
+from home_guardian.configuration.application_configuration import application_conf
+
+mail_host: str = application_conf.get_string("email.mail_host")
+mail_user: str = application_conf.get_string("email.mail_user")
+mail_password: str = application_conf.get_string("email.mail_password")
+sender: str = f"{mail_user}{application_conf.get_string('email.mail_address_suffix')}"
+receivers: List[str] = application_conf.get_list("email.receivers")
 
 
 def build_message(receiver: str) -> MIMEMultipart:
@@ -38,7 +39,7 @@ def build_message(receiver: str) -> MIMEMultipart:
 def send_email():
     smtp: smtplib.SMTP = smtplib.SMTP(mail_host, 25)
     smtp.connect(mail_host, 25)
-    smtp.login(mail_user, authorization_password)
+    smtp.login(sender, mail_password)
     for receiver in receivers:
         message: MIMEMultipart = build_message(receiver)
         try:

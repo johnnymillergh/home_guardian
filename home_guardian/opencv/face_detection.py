@@ -7,7 +7,7 @@ from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
 from home_guardian.configuration.thread_pool_configuration import executor
-from home_guardian.function_collection import get_data_dir, get_root_path
+from home_guardian.function_collection import get_data_dir, get_resources_dir
 
 detected_face_dir = f"{get_data_dir()}/detection"
 os.makedirs(detected_face_dir, exist_ok=True)
@@ -16,7 +16,7 @@ logger.warning(f"Made the directory, detected_face_dir: {detected_face_dir}")
 
 def detect_and_take_photo() -> None:
     face = cv2.CascadeClassifier(
-        f"{get_root_path()}/resources/haarcascade_frontalface_alt2.xml"
+        f"{get_resources_dir()}/haarcascade_frontalface_alt2.xml"
     )
     capture = cv2.VideoCapture(0)
     while True:
