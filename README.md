@@ -22,7 +22,11 @@ Here are the highlights of **home_guardian**:
    `Python` - [![Python](https://img.shields.io/badge/Python-v3.10.0-blue)](https://www.python.org/downloads/release/python-3100/)
    `OpenCV` - [![OpenCV](https://img.shields.io/badge/OpenCV-v4.5.4.58-red)](https://pypi.org/project/opencv-python/4.5.4.58/)
    
-2. Sending Email via [Sina]() Email Service.
+2. Sending Email via [Tom](https://mail.tom.com/) Email Service, email template engine powered by [Jinjia2](https://jinja2docs.readthedocs.io/en/stable/)
+
+2. Data persistence with [peewee](http://docs.peewee-orm.com/en/latest/), [SQLite3](https://sqlite.org/index.html) as local database
+
+2. Environment variable and configuration with [pyhocon](https://pythonhosted.org/pyhocon/_modules/pyhocon.html). Read `${ENVIRONMENT_VARIABLE}` when startup
 
 3. Testing with [pytest](https://docs.pytest.org/en/latest/)
 
