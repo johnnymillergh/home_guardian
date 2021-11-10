@@ -1,7 +1,7 @@
 name: Build and Test
 
 on:
-  pull_request: {}
+  pull_request: { }
   push:
     branches:
       - 'main'
@@ -17,22 +17,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Setup Python
         uses: actions/setup-python@v2.2.2
         with:
           python-version: "3.10.0"
           architecture: x64
-
       - name: Install Dependencies with pipenv
         run: |
           pip install pipenv
           pipenv install --deploy --dev
-
-      - run: pipenv run isort --recursive --diff .
-      - run: pipenv run black --check .
-      - run: pipenv run flake8
-      - run: pipenv run mypy
+      - name: Import Sorting with isort
+        run: pipenv run isort --recursive --diff .
+      - name: Code Formatting with black
+        run: pipenv run black --check .
+      - name: Linting with flake8
+        run: pipenv run flake8
+      - name: Static type check
+        run: pipenv run mypy
       - name: Python tests with pytest
         run: pipenv run pytest --cov
 
@@ -40,10 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Build Docker Image
+      # https://www.guru99.com/smoke-testing.html
+      - name: Build Docker Image for Smoke Test
         run: docker build . -t home_guardian:test
-
       - name: Smoke Test Docker Image
         run: |
           docker run --rm home_guardian:test 10
