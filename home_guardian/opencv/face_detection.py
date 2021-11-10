@@ -69,4 +69,3 @@ def async_save_capture(frame) -> None:
         render_dict,
         detected_face.picture_path,
     )
-    logger.info("Sent `security_warning` successfully")

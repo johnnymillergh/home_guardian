@@ -7,6 +7,7 @@ from typing import List
 
 from loguru import logger
 
+from home_guardian.common.debounce_throttle import debounce
 from home_guardian.configuration.application_configuration import application_conf
 from home_guardian.template.html_template import render_template
 
@@ -17,6 +18,12 @@ _sender: str = (
     f"{_mail_username}{application_conf.get_string('email.mail_address_suffix')}"
 )
 _receivers: List[str] = application_conf.get_list("email.receivers")
+
+# Login to the email server
+_smtp: smtplib.SMTP = smtplib.SMTP(_mail_host, 25)
+_smtp.connect(_mail_host, 25)
+_smtp.login(_sender, _mail_password)
+logger.warning(f"Logged in to the email server: {_mail_host}")
 
 
 def build_message(
@@ -55,6 +62,7 @@ def build_message(
     return message
 
 
+@debounce(30)
 def send_email(
     subject: str, template_name: str, render_dict: dict, picture_path: str
 ) -> None:
@@ -66,19 +74,23 @@ def send_email(
     :param render_dict: The render dict for the template.
     :param picture_path: The path to the picture to attach.
     """
-    smtp: smtplib.SMTP = smtplib.SMTP(_mail_host, 25)
-    smtp.connect(_mail_host, 25)
-    smtp.login(_sender, _mail_password)
     for receiver in _receivers:
         message: MIMEMultipart = build_message(
             subject, receiver, template_name, render_dict, picture_path
         )
         logger.debug(f"Sending email. receiver: {receiver}")
         try:
-            smtp.sendmail(_sender, [receiver], message.as_string())
+            _smtp.sendmail(_sender, [receiver], message.as_string())
             logger.debug(
                 f"Sent email successfully. Receiver: {receiver}, subject: {subject}, template_name: {template_name}"
             )
         except smtplib.SMTPException:
             logger.exception("Exception occurred while sending email!")
-    smtp.quit()
+
+
+def cleanup() -> None:
+    """
+    Closes the connection to the email server.
+    """
+    _smtp.quit()
+    logger.warning(f"Logged out from the email server: {_mail_host}")
