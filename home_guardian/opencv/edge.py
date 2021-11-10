@@ -1,4 +1,4 @@
-import cv2
+import cv2.cv2 as cv2
 
 
 def capture_edge_video() -> None:

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from peewee import CharField, DateTimeField
 
-from home_guardian.repository.model.base.model import BaseModel, db
+from home_guardian.repository.model.base.model import BaseModel, database
 
 
 class DetectedFace(BaseModel):
@@ -15,4 +15,4 @@ class DetectedFace(BaseModel):
     created_time = DateTimeField(default=datetime.now)
 
 
-db.create_tables([DetectedFace])
+database.create_tables([DetectedFace])

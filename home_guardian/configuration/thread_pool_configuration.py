@@ -5,9 +5,9 @@ from loguru import logger
 
 from home_guardian.function_collection import get_cpu_count
 
-max_workers = 2 * get_cpu_count()
+_max_workers = 2 * get_cpu_count()
 executor = ThreadPoolExecutor(
-    max_workers=max_workers, thread_name_prefix="my_thread_pool"
+    max_workers=_max_workers, thread_name_prefix="my_thread_pool"
 )
 
 
@@ -16,7 +16,7 @@ def configure() -> None:
     Configure thread pool.
     """
     logger.warning(
-        f"Thread pool executor with {max_workers} workers, executor: {executor}"
+        f"Thread pool executor with {_max_workers} workers, executor: {executor}"
     )
 
 
