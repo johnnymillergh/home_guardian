@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  home_guardian:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: home_guardian
+    image: home_guardian/home_guardian:latest
+    privileged: true
+    devices:
+      - /dev/video0:/dev/video0
+    environment:
+      MAIL_USERNAME: "DEFAULT_MAIL_USERNAME"
+      MAIL_PASSWORD: "DEFAULT_MAIL_PASSWORD"
+      TZ: Asia/Hong_Kong
+    restart: always
+    volumes:
+      - ~/docker-file-mapping/home_guardian:/app/data

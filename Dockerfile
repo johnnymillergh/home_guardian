@@ -29,7 +29,7 @@ ENV PATH="/.venv/bin:$PATH"
 WORKDIR /app
 
 # Install application into container
-COPY . /app
+COPY . .
 
 # Run the executable
 ENTRYPOINT ["python", "-m", "home_guardian"]
