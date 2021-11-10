@@ -20,6 +20,14 @@ def configure() -> None:
     )
 
 
+def cleanup() -> None:
+    """
+    Clean up thread pool.
+    """
+    executor.shutdown()
+    logger.warning(f"Thread pool executor has been shutdown: {executor}")
+
+
 def simulate_get_html(times):
     time.sleep(times)
     logger.info(f"get page {times} finished")
