@@ -12,8 +12,7 @@ logger.warning(f"Initialized db file: {database}")
 class BaseModel(Model):
     """
     Base model for persistence.
-
-    @see Models and Fields https://docs.peewee-orm.com/en/latest/peewee/models.html#model-inheritance
+    Models and Fields https://docs.peewee-orm.com/en/latest/peewee/models.html#model-inheritance
     """
 
     class Meta:

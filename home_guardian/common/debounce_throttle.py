@@ -9,9 +9,9 @@ def debounce(interval: float):
     Decorator that will postpone a functions
     execution until after wait seconds
     have elapsed since the last time it was invoked.
+    https://gist.github.com/walkermatt/2871026
 
-    @param interval: interval time in seconds
-    @see https://gist.github.com/walkermatt/2871026
+    :param interval: interval time in seconds
     """
 
     def decorator(fn):
@@ -47,10 +47,10 @@ class Wrapper:
 def throttle(interval: float):
     """
     Throttle decorator.
+    Python 中的防抖与节流 https://www.bilibili.com/read/cv13257868/
+    Python 中的防抖与节流 https://www.moyu.moe/articles/25/
 
-    @param interval: interval time in seconds
-    @see Python 中的防抖与节流 https://www.bilibili.com/read/cv13257868/
-    @see Python 中的防抖与节流 https://www.moyu.moe/articles/25/
+    :param interval: interval time in seconds
     """
 
     # 下一次许可调用的时间，初始化为 0
