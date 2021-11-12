@@ -14,6 +14,5 @@ services:
       MAIL_USERNAME: "DEFAULT_MAIL_USERNAME"
       MAIL_PASSWORD: "DEFAULT_MAIL_PASSWORD"
       TZ: Asia/Hong_Kong
-    restart: always
     volumes:
-      - ~/docker-file-mapping/home_guardian:/app/data
+      - ~/docker-file-mapping/home_guardian:/app/home_guardian/data
