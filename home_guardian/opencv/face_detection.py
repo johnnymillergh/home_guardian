@@ -2,6 +2,7 @@ import datetime
 import os
 from time import sleep
 
+# noinspection PyPackageRequirements
 import cv2.cv2 as cv2
 from loguru import logger
 
@@ -18,10 +19,18 @@ logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
 
 
 def detect_and_take_photo() -> None:
+    """
+    Detect and take photo.
+    :return: when exception is raised, return None.
+    """
     face = cv2.CascadeClassifier(
         f"{get_resources_dir()}/haarcascade_frontalface_alt2.xml"
     )
-    capture = cv2.VideoCapture(0)
+    try:
+        capture = cv2.VideoCapture(0)
+    except Exception as e:
+        logger.error("Exception raised while capturing video!", e)
+        return
     while True:
         return_value, frame = capture.read()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
