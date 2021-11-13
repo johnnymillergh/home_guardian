@@ -3,6 +3,7 @@ import sys
 
 from loguru import logger
 
+from home_guardian.configuration.application_configuration import application_conf
 from home_guardian.function_collection import get_data_dir
 
 _message_format = (
@@ -16,9 +17,10 @@ _message_format = (
 logger.remove(handler_id=None)
 # Set up logging
 _log_file = get_data_dir() + "/logs/home_guardian.{time}.log"
+log_level = application_conf.get_string("log_level")
 logger.add(
     _log_file,
-    level="DEBUG",
+    level=log_level,
     format=_message_format,
     enqueue=True,
     # turn to false if in production to prevent data leaking
@@ -29,10 +31,12 @@ logger.add(
     serialize=False,
 )
 # Override the default stderr
-logger.add(sys.stderr, format=_message_format)
+logger.add(sys.stderr, level=log_level, format=_message_format)
 
 
 # Intercept standard logging https://gist.github.com/devsetgo/28c2edaca2d09e267dec46bb2e54b9e2
+
+
 class InterceptHandler(logging.Handler):
     def emit(self, record):
         # Get corresponding Loguru level if it exists
@@ -59,4 +63,4 @@ def configure() -> None:
     """
     Configure logging.
     """
-    logger.warning("Loguru logging configured")
+    logger.warning(f"Loguru logging configured, log_level: {log_level}")
