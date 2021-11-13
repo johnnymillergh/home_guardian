@@ -1,21 +1,32 @@
+import sys
+
 from loguru import logger
 
+from home_guardian.common.startup import StartupMode
 from home_guardian.configuration.thread_pool_configuration import (
     cleanup as thread_pool_cleanup,
 )
+from home_guardian.message.email import cleanup as email_cleanup
 from home_guardian.opencv.face_detection import detect_and_take_photo
+from home_guardian.opencv.face_training import train_data
 
 
 def _main() -> None:
     """
     Main function.
     """
+    startup_mode = StartupMode.value_of(int(sys.argv[1]))
+    logger.info(f"startup_mode: {startup_mode}")
     try:
-        detect_and_take_photo()
+        if startup_mode == StartupMode.NORMAL:
+            detect_and_take_photo()
+        elif startup_mode == StartupMode.TRAIN:
+            logger.info("Training data")
+            train_data()
     finally:
-        # Cleanup procedures
         logger.warning("Cleaning up…")
         thread_pool_cleanup()
+        email_cleanup()
 
 
 if __name__ == "__main__":

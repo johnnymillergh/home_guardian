@@ -15,7 +15,7 @@ _message_format = (
 )
 # Remove a previously added handler and stop sending logs to its sink.
 logger.remove(handler_id=None)
-# Set up logging
+# Set up logging for log file
 _log_file = get_data_dir() + "/logs/home_guardian.{time}.log"
 log_level = application_conf.get_string("log_level")
 logger.add(
@@ -30,7 +30,7 @@ logger.add(
     compression="gz",
     serialize=False,
 )
-# Override the default stderr
+# Override the default stderr (console)
 logger.add(sys.stderr, level=log_level, format=_message_format)
 
 
