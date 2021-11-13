@@ -31,6 +31,7 @@ class VideoCaptureThreading:
         self._grabbed, self._frame = self._video_capture.read()
         self._started = False
         self._read_lock = Lock()
+        logger.warning("Initialized {}", self)
 
     def set(self, property_id: int, value: Any) -> VideoCaptureThreading:
         """
@@ -94,3 +95,4 @@ class VideoCaptureThreading:
         Release video capture object
         """
         self._video_capture.release()
+        logger.warning("Released {}", self)

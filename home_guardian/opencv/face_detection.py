@@ -23,21 +23,20 @@ def detect_and_take_photo() -> None:
     Detect and take photo.
     :return: when exception is raised, return None.
     """
-    face = cv2.CascadeClassifier(
-        f"{get_resources_dir()}/haarcascade_frontalface_alt2.xml"
-    )
+    face = CascadeClassifier(f"{get_resources_dir()}/haarcascade_frontalface_alt2.xml")
     try:
-        capture = VideoCaptureThreading(0).start()
+        video_capture_threading: VideoCaptureThreading = VideoCaptureThreading(
+            0
+        ).start()
     except Exception as e:
         logger.error("Exception raised while starting video capture thread!", e)
         return
     while True:
-        grabbed, frame = capture.read()
+        grabbed, frame = video_capture_threading.read()
         process_frame(face, frame)
         if not grabbed:
             break
-    capture.stop()
-    cv2.destroyAllWindows()
+    video_capture_threading.stop()
 
 
 @throttle(3)
