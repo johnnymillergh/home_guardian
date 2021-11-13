@@ -5,7 +5,7 @@ from loguru import logger
 
 from home_guardian.function_collection import get_cpu_count
 
-_max_workers = 2 * get_cpu_count()
+_max_workers = get_cpu_count()
 executor = ThreadPoolExecutor(
     max_workers=_max_workers, thread_name_prefix="my_thread_pool"
 )

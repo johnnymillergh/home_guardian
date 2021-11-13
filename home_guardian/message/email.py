@@ -78,10 +78,10 @@ def send_email(
         message: MIMEMultipart = build_message(
             subject, receiver, template_name, render_dict, picture_path
         )
-        logger.debug(f"Sending email. receiver: {receiver}")
+        logger.info(f"Sending email. receiver: {receiver}")
         try:
             _smtp.sendmail(_sender, [receiver], message.as_string())
-            logger.debug(
+            logger.info(
                 f"Sent email successfully. Receiver: {receiver}, subject: {subject}, template_name: {template_name}"
             )
         except smtplib.SMTPException:

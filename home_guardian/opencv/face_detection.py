@@ -1,15 +1,15 @@
 import datetime
 import os
-from time import sleep
 
-# noinspection PyPackageRequirements
 import cv2.cv2 as cv2
+from cv2.cv2 import CascadeClassifier
 from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
 from home_guardian.configuration.thread_pool_configuration import executor
 from home_guardian.function_collection import get_data_dir, get_resources_dir
 from home_guardian.message.email import send_email
+from home_guardian.opencv.threading import VideoCaptureThreading
 from home_guardian.repository.detected_face_repository import save
 from home_guardian.repository.model.detected_face import DetectedFace
 
@@ -27,34 +27,42 @@ def detect_and_take_photo() -> None:
         f"{get_resources_dir()}/haarcascade_frontalface_alt2.xml"
     )
     try:
-        capture = cv2.VideoCapture(0)
+        capture = VideoCaptureThreading(0).start()
     except Exception as e:
-        logger.error("Exception raised while capturing video!", e)
+        logger.error("Exception raised while starting video capture thread!", e)
         return
     while True:
-        return_value, frame = capture.read()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face.detectMultiScale(gray)
-        for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            save_capture(frame)
-        if return_value:
-            cv2.imshow("Capture Window", frame)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
-        sleep(1)
-    capture.release()
+        grabbed, frame = capture.read()
+        process_frame(face, frame)
+        if not grabbed:
+            break
+    capture.stop()
     cv2.destroyAllWindows()
 
 
 @throttle(3)
-def save_capture(frame) -> None:
-    logger.debug(f"type of frame: {type(frame)}")
-    executor.submit(async_save_capture, frame)
+def process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
+    executor.submit(async_process_frame, cascade_classifier, frame)
 
 
 @logger.catch
-def async_save_capture(frame) -> None:
+def async_process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = cascade_classifier.detectMultiScale(gray_frame)
+    for (x, y, w, h) in faces:
+        logger.info(
+            "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
+        )
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        save_frame(frame)
+
+
+def save_frame(frame) -> None:
+    """
+    Save frame.
+
+    :param frame: The frame
+    """
     picture_path = (
         f"{_detected_face_dir}"
         f"/detected_face_{datetime.datetime.now().__str__().replace(':', '_')}.jpeg"
