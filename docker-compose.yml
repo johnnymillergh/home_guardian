@@ -13,6 +13,7 @@ services:
     environment:
       MAIL_USERNAME: "DEFAULT_MAIL_USERNAME"
       MAIL_PASSWORD: "DEFAULT_MAIL_PASSWORD"
+      HEADLESS: true
       TZ: Asia/Hong_Kong
     volumes:
       - ~/docker-file-mapping/home_guardian:/app/home_guardian/data
