@@ -6,6 +6,7 @@ from cv2.cv2 import CascadeClassifier
 from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
+from home_guardian.configuration.application_configuration import application_conf
 from home_guardian.configuration.thread_pool_configuration import executor
 from home_guardian.function_collection import get_data_dir, get_resources_dir
 from home_guardian.message.email import send_email
@@ -18,6 +19,8 @@ from home_guardian.repository.trained_face_repository import get_by_id
 _detected_face_dir = f"{get_data_dir()}/detection"
 os.makedirs(_detected_face_dir, exist_ok=True)
 logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
+
+_headless: bool = application_conf.get_bool("headless")
 
 
 def detect_and_take_photo() -> None:
@@ -33,9 +36,10 @@ def detect_and_take_photo() -> None:
         return
     while True:
         grabbed, frame = vid_cap.read()
-        cv2.imshow("Capture", frame)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        if _headless:
+            cv2.imshow("Capture", frame)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
         if not grabbed:
             break
         process_frame(face, frame)
@@ -64,10 +68,11 @@ def async_process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
         label, confidence = _recognizer.predict(gray_frame)
         if 4 <= confidence <= 85:
             trained_face: TrainedFace = get_by_id(_id=label)
+            text: str
             if trained_face is not None:
-                text: str = trained_face.username
+                text = trained_face.username
             else:
-                text: str = "Unknown"
+                text = "Unknown"
             logger.info(
                 f"Recognized face. Label: {label}, confidence: {confidence}, text: {text}"
             )
