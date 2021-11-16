@@ -26,6 +26,13 @@ def get_resources_dir() -> str:
     return f"{get_root_path()}/resources"
 
 
+def get_training_datasets_dir() -> str:
+    """
+    Get the training datasets directory of the project.
+    """
+    return f"{get_data_dir()}/training_datasets"
+
+
 def get_cpu_count() -> int:
     """
     Get CPU count, default is 4

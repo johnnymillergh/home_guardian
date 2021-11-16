@@ -110,12 +110,10 @@ def throttle(interval: float):
             now = time()
             # 若未到下一次许可调用的时间，直接返回
             if next_t.get() > now:
-                logger.debug(f"Skipped throttled call, function: {fn}")
                 return
             # 更新下一次许可调用的时间
             next_t.set(now + interval)
             # 调用函数并返回
-            logger.debug(f"Called throttled function: {fn}")
             return fn(*args, **kwargs)
 
         return throttled

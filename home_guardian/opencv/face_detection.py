@@ -12,6 +12,8 @@ from home_guardian.message.email import send_email
 from home_guardian.opencv.threading import VideoCaptureThreading
 from home_guardian.repository.detected_face_repository import save
 from home_guardian.repository.model.detected_face import DetectedFace
+from home_guardian.repository.model.trained_face import TrainedFace
+from home_guardian.repository.trained_face_repository import get_by_id
 
 _detected_face_dir = f"{get_data_dir()}/detection"
 os.makedirs(_detected_face_dir, exist_ok=True)
@@ -25,18 +27,20 @@ def detect_and_take_photo() -> None:
     """
     face = CascadeClassifier(f"{get_resources_dir()}/haarcascade_frontalface_alt2.xml")
     try:
-        video_capture_threading: VideoCaptureThreading = VideoCaptureThreading(
-            0
-        ).start()
+        vid_cap: VideoCaptureThreading = VideoCaptureThreading(0).start()
     except Exception as e:
         logger.error("Exception raised while starting video capture thread!", e)
         return
     while True:
-        grabbed, frame = video_capture_threading.read()
-        process_frame(face, frame)
+        grabbed, frame = vid_cap.read()
+        cv2.imshow("Capture", frame)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
         if not grabbed:
             break
-    video_capture_threading.stop()
+        process_frame(face, frame)
+    vid_cap.stop()
+    cv2.destroyAllWindows()
 
 
 @throttle(3)
@@ -47,11 +51,30 @@ def process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
 @logger.catch
 def async_process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = cascade_classifier.detectMultiScale(gray_frame)
+    faces = cascade_classifier.detectMultiScale(
+        gray_frame, scaleFactor=1.5, minNeighbors=5
+    )
     for (x, y, w, h) in faces:
         logger.info(
             "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
         )
+        _recognizer = cv2.face.LBPHFaceRecognizer_create()
+        _recognizer.read(f"{get_data_dir()}/trainer.yml")
+        # recognize? deep learned model predict keras tensorflow pytorch scikit learn
+        label, confidence = _recognizer.predict(gray_frame)
+        if 4 <= confidence <= 85:
+            trained_face: TrainedFace = get_by_id(_id=label)
+            if trained_face is not None:
+                text: str = trained_face.username
+            else:
+                text: str = "Unknown"
+            logger.info(
+                f"Recognized face. Label: {label}, confidence: {confidence}, text: {text}"
+            )
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            color = (255, 255, 255)
+            stroke = 2
+            cv2.putText(frame, text, (x, y), font, 1, color, stroke, cv2.LINE_AA)
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         save_frame(frame)
 
