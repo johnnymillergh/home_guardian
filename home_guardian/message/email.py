@@ -65,16 +65,15 @@ def build_message(
     message["To"] = Header(receiver)
     message["Cc"] = Header(_sender)
     message.attach(content)
-    file = open(picture_path, "rb")
-    img_data = file.read()
-    file.close()
+    with open(picture_path, "rb") as file:
+        img_data = file.read()
     img = MIMEImage(img_data)
     img.add_header("Content-ID", render_dict["content_id"])
     message.attach(img)
     return message
 
 
-@debounce(30)
+@debounce(10)
 def send_email(
     subject: str, template_name: str, render_dict: dict, picture_path: str
 ) -> None:

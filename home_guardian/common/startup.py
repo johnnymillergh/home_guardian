@@ -10,12 +10,14 @@ class StartupMode(Enum):
     """
 
     # Detect and inspect
-    NORMAL = 0
+    DETECT = "detect"
+    # Collect data
+    COLLECT = "collect"
     # Train data
-    TRAIN = 1
+    TRAIN = "train"
 
     @staticmethod
-    def value_of(value: int) -> StartupMode:
+    def value_of(value: str) -> StartupMode:
         for member in StartupMode:
             if member.value == value:
                 return member

@@ -3,7 +3,7 @@ import os
 
 import cv2.cv2 as cv2
 from cv2.cv2 import CascadeClassifier
-from cv2.data import haarcascades
+from cv2.mat_wrapper import Mat
 from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
@@ -11,6 +11,7 @@ from home_guardian.configuration.application_configuration import application_co
 from home_guardian.configuration.thread_pool_configuration import executor
 from home_guardian.function_collection import get_data_dir
 from home_guardian.message.email import send_email
+from home_guardian.opencv.haar_model import haarcascade_frontalface_default
 from home_guardian.opencv.threading import VideoCaptureThreading
 from home_guardian.repository.detected_face_repository import save
 from home_guardian.repository.model.detected_face import DetectedFace
@@ -23,10 +24,9 @@ logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
 
 _headless: bool = application_conf.get_bool("headless")
 
-_haarcascade_frontalface_default = os.path.join(
-    haarcascades, "haarcascade_frontalface_default.xml"
-)
-logger.warning(f"_haarcascade_frontalface_default: {_haarcascade_frontalface_default}")
+face = CascadeClassifier(haarcascade_frontalface_default)
+_recognizer = cv2.face.LBPHFaceRecognizer_create()
+_recognizer.read(f"{get_data_dir()}/trainer.yml")
 
 
 def detect_and_take_photo() -> None:
@@ -34,7 +34,6 @@ def detect_and_take_photo() -> None:
     Detect and take photo.
     :return: when exception is raised, return None.
     """
-    face = CascadeClassifier(_haarcascade_frontalface_default)
     try:
         vid_cap: VideoCaptureThreading = VideoCaptureThreading(0).start()
     except Exception as e:
@@ -54,23 +53,21 @@ def detect_and_take_photo() -> None:
 
 
 @throttle(3)
-def process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
-    executor.submit(async_process_frame, cascade_classifier, frame)
+def process_frame(frame: Mat) -> None:
+    executor.submit(async_process_frame, frame)
 
 
 @logger.catch
-def async_process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
+def async_process_frame(frame: Mat) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = cascade_classifier.detectMultiScale(gray_frame)
+    faces = face.detectMultiScale(gray_frame, scaleFactor=1.5, minNeighbors=5)
     for (x, y, w, h) in faces:
         logger.info(
             "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
         )
-        _recognizer = cv2.face.LBPHFaceRecognizer_create()
-        _recognizer.read(f"{get_data_dir()}/trainer.yml")
         # recognize? deep learned model predict keras tensorflow pytorch scikit learn
         label, confidence = _recognizer.predict(gray_frame)
-        if 4 <= confidence <= 85:
+        if 50 <= confidence <= 85:
             trained_face: TrainedFace = get_by_id(_id=label)
             text: str
             if trained_face is not None:
