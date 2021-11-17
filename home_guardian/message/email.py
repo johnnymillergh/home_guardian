@@ -11,19 +11,31 @@ from home_guardian.common.debounce_throttle import debounce
 from home_guardian.configuration.application_configuration import application_conf
 from home_guardian.template.html_template import render_template
 
-_mail_host: str = application_conf.get_string("email.mail_host")
-_mail_username: str = application_conf.get_string("email.mail_username")
-_mail_password: str = application_conf.get_string("email.mail_password")
-_sender: str = (
-    f"{_mail_username}{application_conf.get_string('email.mail_address_suffix')}"
-)
+_email_muted: bool = application_conf.get_bool("email.muted")
+_muted_message = "Email module is muted!"
+_host: str = application_conf.get_string("email.host")
+_port: int = application_conf.get_int("email.port")
+_username: str = application_conf.get_string("email.username")
+_password: str = application_conf.get_string("email.password")
+_sender: str = f"{_username}{application_conf.get_string('email.mail_address_suffix')}"
 _receivers: List[str] = application_conf.get_list("email.receivers")
 
-# Login to the email server
-_smtp: smtplib.SMTP = smtplib.SMTP(_mail_host, 25)
-_smtp.connect(_mail_host, 25)
-_smtp.login(_sender, _mail_password)
-logger.warning(f"Logged in to the email server: {_mail_host}")
+_smtp: smtplib.SMTP = smtplib.SMTP(_host, _port)
+
+
+def __init__() -> None:
+    """
+    Initializes the email module.
+    """
+    if _email_muted:
+        logger.warning(_muted_message)
+        return
+    # Login to the email server
+    _smtp.connect(_host, 25)
+    _smtp.login(_sender, _password)
+    logger.warning(
+        f"Initialized email module and logged in to the email server: {_host}"
+    )
 
 
 def build_message(
@@ -74,6 +86,9 @@ def send_email(
     :param render_dict: The render dict for the template.
     :param picture_path: The path to the picture to attach.
     """
+    if _email_muted:
+        logger.warning(_muted_message)
+        return
     for receiver in _receivers:
         message: MIMEMultipart = build_message(
             subject, receiver, template_name, render_dict, picture_path
@@ -92,5 +107,8 @@ def cleanup() -> None:
     """
     Closes the connection to the email server.
     """
+    if _email_muted:
+        logger.warning(_muted_message)
+        return
     _smtp.quit()
-    logger.warning(f"Logged out from the email server: {_mail_host}")
+    logger.warning(f"Logged out from the email server: {_host}")
