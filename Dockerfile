@@ -33,4 +33,4 @@ COPY . .
 
 # Run the executable
 ENTRYPOINT ["python", "-m", "home_guardian"]
-CMD ["1"]
+CMD ["detect"]
