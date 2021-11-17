@@ -8,12 +8,13 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Publish to GitHub packages
-      uses: whoan/docker-build-with-cache-action@v2
-      with:
-        registry: docker.pkg.github.com
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        image_name: ${{ github.repository }}/home_guardian
+      - name: Publish to GitHub packages
+        uses: whoan/docker-build-with-cache-action@v5
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          image_name: ${{ github.repository }}/home_guardian
+          push_git_tag: true
