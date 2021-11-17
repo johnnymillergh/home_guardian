@@ -36,7 +36,7 @@ def detect_and_take_photo() -> None:
         return
     while True:
         grabbed, frame = vid_cap.read()
-        if _headless:
+        if not _headless:
             cv2.imshow("Capture", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
