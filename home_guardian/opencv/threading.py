@@ -5,6 +5,7 @@ from typing import Any
 
 import cv2.cv2 as cv2
 from cv2.cv2 import VideoCapture
+from cv2.mat_wrapper import Mat
 from loguru import logger
 
 
@@ -60,7 +61,7 @@ class VideoCaptureThreading:
         logger.debug("Started video capture thread. Thread: {}", self._thread)
         return self
 
-    def _thread_loop(self):
+    def _thread_loop(self) -> None:
         """
         [Private] Loop over frames from the video stream.
         """
@@ -72,7 +73,7 @@ class VideoCaptureThreading:
                 self._frame = frame
         logger.warning("Stopped video capture loop. Thread: {}", self._thread)
 
-    def read(self):
+    def read(self) -> tuple[bool, Mat]:
         """
         Read the frame from the video stream.
 

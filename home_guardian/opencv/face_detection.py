@@ -47,7 +47,7 @@ def detect_and_take_photo() -> None:
                 break
         if not grabbed:
             break
-        process_frame(face, frame)
+        process_frame(frame)
     vid_cap.stop()
     cv2.destroyAllWindows()
 
