@@ -3,12 +3,13 @@ import os
 
 import cv2.cv2 as cv2
 from cv2.cv2 import CascadeClassifier
+from cv2.data import haarcascades
 from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
 from home_guardian.configuration.application_configuration import application_conf
 from home_guardian.configuration.thread_pool_configuration import executor
-from home_guardian.function_collection import get_data_dir, get_resources_dir
+from home_guardian.function_collection import get_data_dir
 from home_guardian.message.email import send_email
 from home_guardian.opencv.threading import VideoCaptureThreading
 from home_guardian.repository.detected_face_repository import save
@@ -22,13 +23,18 @@ logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
 
 _headless: bool = application_conf.get_bool("headless")
 
+_haarcascade_frontalface_default = os.path.join(
+    haarcascades, "haarcascade_frontalface_default.xml"
+)
+logger.warning(f"_haarcascade_frontalface_default: {_haarcascade_frontalface_default}")
+
 
 def detect_and_take_photo() -> None:
     """
     Detect and take photo.
     :return: when exception is raised, return None.
     """
-    face = CascadeClassifier(f"{get_resources_dir()}/haarcascade_frontalface_alt2.xml")
+    face = CascadeClassifier(_haarcascade_frontalface_default)
     try:
         vid_cap: VideoCaptureThreading = VideoCaptureThreading(0).start()
     except Exception as e:
@@ -55,9 +61,7 @@ def process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
 @logger.catch
 def async_process_frame(cascade_classifier: CascadeClassifier, frame) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = cascade_classifier.detectMultiScale(
-        gray_frame, scaleFactor=1.5, minNeighbors=5
-    )
+    faces = cascade_classifier.detectMultiScale(gray_frame)
     for (x, y, w, h) in faces:
         logger.info(
             "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
