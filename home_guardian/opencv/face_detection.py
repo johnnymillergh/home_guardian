@@ -26,7 +26,10 @@ _headless: bool = application_conf.get_bool("headless")
 
 face = CascadeClassifier(haarcascade_frontalface_default)
 _recognizer = cv2.face.LBPHFaceRecognizer_create()
-_recognizer.read(f"{get_data_dir()}/trainer.yml")
+try:
+    _recognizer.read(f"{get_data_dir()}/trainer.yml")
+except Exception:
+    logger.exception("Cannot read trainer.yml!")
 
 
 def detect_and_take_photo() -> None:
@@ -60,14 +63,15 @@ def process_frame(frame: Mat) -> None:
 @logger.catch
 def async_process_frame(frame: Mat) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face.detectMultiScale(gray_frame, scaleFactor=1.5, minNeighbors=5)
+    faces = face.detectMultiScale(gray_frame)
     for (x, y, w, h) in faces:
         logger.info(
             "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
         )
         # recognize? deep learned model predict keras tensorflow pytorch scikit learn
         label, confidence = _recognizer.predict(gray_frame)
-        if 50 <= confidence <= 85:
+        logger.info(f"Predicted face. Label: {label}, confidence: {confidence}")
+        if 2 <= confidence <= 85:
             trained_face: TrainedFace = get_by_id(_id=label)
             text: str
             if trained_face is not None:

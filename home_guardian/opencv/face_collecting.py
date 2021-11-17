@@ -58,9 +58,7 @@ def _async_process_frame(
     cascade_classifier: CascadeClassifier, frame, username: str
 ) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = cascade_classifier.detectMultiScale(
-        gray_frame, scaleFactor=1.5, minNeighbors=5
-    )
+    faces = cascade_classifier.detectMultiScale(gray_frame)
     for (x, y, w, h) in faces:
         logger.info(
             "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
