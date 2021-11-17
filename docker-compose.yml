@@ -18,4 +18,4 @@ services:
     volumes:
       - ~/docker-file-mapping/home_guardian:/app/home_guardian/data
     command:
-      - 0
+      - detect
