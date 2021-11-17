@@ -1,6 +1,18 @@
-import logging.config
-from os import path
+from home_guardian.configuration.application_configuration import (
+    configure as application_configure,
+)
+from home_guardian.configuration.loguru_configuration import (
+    configure as loguru_configure,
+)
+from home_guardian.configuration.thread_pool_configuration import (
+    configure as thread_pool_configure,
+)
+from home_guardian.message.email import __init__
 
-logging_conf_path = path.join(path.dirname(path.abspath(__file__)), "logging.conf")
-print(f"logging_conf_path = {logging_conf_path}, __file__ = {__file__}")
-logging.config.fileConfig(logging_conf_path)
+# Configuration
+application_configure()
+loguru_configure()
+thread_pool_configure()
+
+# Initialization
+__init__()
