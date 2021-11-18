@@ -1,3 +1,11 @@
+# [1.0.1](https://github.com/johnnymillergh/home_guardian/compare/1.0.0...1.0.1) (2021-11-18)
+
+
+### Build
+* **$GitHub:** migrate to the container registry from the Docker registry ([e23a8af](https://github.com/johnnymillergh/home_guardian/commit/e23a8afa115f08761c7239259b74de5aa030b4f8))
+
+
+
 # 1.0.0 (2021-11-17)
 
 
