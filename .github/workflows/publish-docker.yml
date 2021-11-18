@@ -10,10 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Publish to GitHub packages
+      - name: Publish Docker Image to GitHub Packages [Container Registry - ghcr.io]
         uses: whoan/docker-build-with-cache-action@v5
         with:
-          registry: docker.pkg.github.com
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           image_name: ${{ github.repository }}/home_guardian
