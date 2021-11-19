@@ -12,6 +12,7 @@ jobs:
       registry: ghcr.io
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
+      image_name: ${{ github.repository }}/home_guardian
     steps:
       - uses: actions/checkout@v2.1.0
       - name: Set output
