@@ -5,16 +5,26 @@ on:
     tags: "*"
 
 jobs:
-  docker:
-    runs-on: ubuntu-latest
+  docker_armv7:
+    # The host should always be Linux
+    runs-on: ubuntu-18.04
+    name: Build on ubuntu-18.04 armv7
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Publish Docker Image to GitHub Packages [Container Registry - ghcr.io]
-        uses: whoan/docker-build-with-cache-action@v5
+      - uses: actions/checkout@v2.1.0
+      - uses: uraimo/run-on-arch-action@v2.0.5
+        name: Run commands
+        id: runcmd
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          image_name: ${{ github.repository }}/home_guardian
-          push_git_tag: true
+          arch: armv7
+          distro: ubuntu18.04
+          # Not required, but speeds up builds by storing container images in
+          # a GitHub package registry.
+          githubToken: ${{ github.token }}
+          # Set an output parameter `uname` for use in subsequent steps
+          run: |
+            uname -a
+            echo ::set-output name=uname::$(uname -a)
+            docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker build -t ghcr.io/${{ github.actor }}/home_guardian:${{ GITHUB_REF_NAME }} .
+            docker push ghcr.io/${{ github.actor }}/home_guardian:${{ GITHUB_REF_NAME }}
+            docker image list
