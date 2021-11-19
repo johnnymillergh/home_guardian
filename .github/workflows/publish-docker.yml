@@ -15,6 +15,7 @@ jobs:
         run: uname -a
       - name: Setup Docker for multiple platform (linux/arm/v7)
         run: |
+          docker run --privileged --rm tonistiigi/binfmt --install all
           docker buildx create --name multiple_platform_builder
           docker buildx use multiple_platform_builder
           docker buildx inspect --bootstrap
