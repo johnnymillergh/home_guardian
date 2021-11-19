@@ -13,6 +13,11 @@ jobs:
       - uses: actions/checkout@v2.1.0
       - name: Display OS architecture
         run: uname -a
+      - name: Setup Docker for multiple platform (linux/amd64,linux/arm64,linux/arm/v7)
+        run: |
+          docker buildx create --name multiple_platform_builder
+          docker buildx use multiple_platform_builder
+          docker buildx inspect --bootstrap
       - name: Docker registry login [ghcr.io]
         env:
           registry: ghcr.io
