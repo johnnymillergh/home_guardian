@@ -36,3 +36,23 @@ jobs:
         run: pipenv run mypy
       - name: Python tests with [pytest]
         run: pipenv run pytest --cov
+
+  docker-builx-smoke-test:
+    runs-on: ubuntu-latest
+    name: Docker builx
+    env:
+      image_name: ${{ github.repository }}/home_guardian
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - name: Display Host OS architecture
+        run: uname -a
+      - name: Setup Docker for multiple platform (linux/arm/v7)
+        run: |
+          docker run --privileged --rm tonistiigi/binfmt --install all
+          docker buildx create --name multiple_platform_builder
+          docker buildx use multiple_platform_builder
+          docker buildx inspect --bootstrap
+      - name: Build Docker image
+        run: docker buildx build --platform linux/arm/v7 -t $image_name:test-buster .
+      - name: Inspect Docker image
+        run: docker buildx imagetools inspect $registry/$image_name:test-buster
