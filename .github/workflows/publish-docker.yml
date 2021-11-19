@@ -5,6 +5,33 @@ on:
     tags: "*"
 
 jobs:
+  docker_x86:
+    # The host should always be Linux
+    runs-on: ubuntu-latest
+    name: Build ubuntu-latest x64
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - name: Display OS architecture
+        run: uname -a
+      - name: Docker registry login [ghcr.io]
+        env:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        run: docker login $registry -u $username -p $password
+      - name: Build Docker image
+        env:
+          registry: ghcr.io
+          image_name: ${{ github.repository }}/home_guardian
+        run: docker build -t $registry/$image_name:$GITHUB_REF_NAME-x86 .
+      - name: Push Docker image
+        env:
+          registry: ghcr.io
+          image_name: ${{ github.repository }}/home_guardian
+        run: docker push $registry/$image_name:$GITHUB_REF_NAME-x86
+      - name: List Docker image
+        run: docker image list
+
   docker_armv7:
     # The host should always be Linux
     runs-on: ubuntu-18.04
@@ -16,7 +43,7 @@ jobs:
         id: runcmd
         with:
           arch: armv7
-          distro: ubuntu18.04
+          distro: buster
           # Not required, but speeds up builds by storing container images in
           # a GitHub package registry.
           githubToken: ${{ github.token }}
@@ -28,6 +55,8 @@ jobs:
         # Echo the `uname` output parameter from the `runcmd` step
         run: |
           echo "The uname output was ${{ steps.runcmd.outputs.uname }}"
+      - name: Display OS architecture
+        run: uname -a
       - name: Docker registry login [ghcr.io]
         env:
           registry: ghcr.io
@@ -38,11 +67,11 @@ jobs:
         env:
           registry: ghcr.io
           image_name: ${{ github.repository }}/home_guardian
-        run: docker build -t $registry/$image_name:$GITHUB_REF_NAME .
+        run: docker build -t $registry/$image_name:$GITHUB_REF_NAME-buster .
       - name: Push Docker image
         env:
           registry: ghcr.io
           image_name: ${{ github.repository }}/home_guardian
-        run: docker push $registry/$image_name:$GITHUB_REF_NAME
+        run: docker push $registry/$image_name:$GITHUB_REF_NAME-buster
       - name: List Docker image
         run: docker image list
