@@ -1,3 +1,4 @@
+#!/bin/bash
 FROM --platform=$BUILDPLATFORM python:3.10-buster AS base
 
 ARG TARGETPLATFORM

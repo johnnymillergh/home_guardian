@@ -11,6 +11,8 @@ services:
     devices:
       - /dev/video0:/dev/video0
     environment:
+      LOG_LEVEL: "DEBUG"
+      EMAIL_MUTED: true
       MAIL_USERNAME: "DEFAULT_MAIL_USERNAME"
       MAIL_PASSWORD: "DEFAULT_MAIL_PASSWORD"
       HEADLESS: true
@@ -19,3 +21,18 @@ services:
       - ~/docker-file-mapping/home_guardian:/app/home_guardian/data
     command:
       - detect
+
+# Docker run command:
+#docker run \
+#  --name home_guardian \
+#  --rm \
+#  --privileged \
+#  --device /dev/video0:/dev/video0 \
+#  --volume ~/docker-file-mapping/home_guardian:/app/home_guardian/data \
+#  --env LOG_LEVEL=DEBUG \
+#  --env EMAIL_MUTED=true \
+#  --env MAIL_USERNAME=johnnys_rpi \
+#  --env MAIL_PASSWORD=jm@tom395318582 \
+#  --env HEADLESS=true \
+#  --env TZ=Asia/Hong_Kong \
+#  -d ghcr.io/johnnymillergh/home_guardian/home_guardian:1.0.2.11-buster
