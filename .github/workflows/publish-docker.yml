@@ -5,10 +5,13 @@ on:
     tags: "*"
 
 jobs:
-  docker_builx:
-    # The host should always be Linux
+  docker-builx:
     runs-on: ubuntu-latest
-    name: Docker builx
+    name: Build and Push Image by Docker builx
+    env:
+      registry: ghcr.io
+      username: ${{ github.actor }}
+      password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2.1.0
       - name: Set output
@@ -29,20 +32,12 @@ jobs:
           docker buildx use multiple_platform_builder
           docker buildx inspect --bootstrap
       - name: Docker registry login [ghcr.io]
-        env:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
         run: docker login $registry -u $username -p $password
       - name: Build and Push Docker image
         env:
-          registry: ghcr.io
-          image_name: ${{ github.repository }}/home_guardian
           TAG_NAME: ${{ steps.vars.outputs.tag }}
         run: docker buildx build --platform linux/arm/v7 --push -t $registry/$image_name:$TAG_NAME-buster .
       - name: List Docker image
         env:
-          registry: ghcr.io
-          image_name: ${{ github.repository }}/home_guardian
           TAG_NAME: ${{ steps.vars.outputs.tag }}
         run: docker buildx imagetools inspect $registry/$image_name:$TAG_NAME-buster
