@@ -8,7 +8,7 @@ jobs:
   docker_builx:
     # The host should always be Linux
     runs-on: ubuntu-latest
-    name: Build ubuntu-latest x64
+    name: Docker builx
     steps:
       - uses: actions/checkout@v2.1.0
       - name: Display OS architecture

@@ -1,4 +1,8 @@
-FROM python:3.10-buster AS base
+FROM --platform=$BUILDPLATFORM python:3.10-buster AS base
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+RUN echo "I am running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
 # Setup env
 ENV LANG C.UTF-8
@@ -10,6 +14,7 @@ ENV PYTHONFAULTHANDLER 1
 FROM base AS python-deps
 
 # Install pipenv and compilation dependencies
+RUN python -m pip install --upgrade pip setuptools wheel
 RUN pip install pipenv
 RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
