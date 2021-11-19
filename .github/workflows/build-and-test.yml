@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: "3.10.0"
           architecture: x64
-      - name: Install Dependencies with pipenv
+      - name: Install Dependencies with [pipenv]
         run: |
           pip install pipenv
           pipenv install --deploy --dev
@@ -36,14 +36,3 @@ jobs:
         run: pipenv run mypy
       - name: Python tests with [pytest]
         run: pipenv run pytest --cov
-
-  docker-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      # https://www.guru99.com/smoke-testing.html
-      - name: Build Docker Image for Smoke Test
-        run: docker build . -t home_guardian:test
-      - name: Smoke Test Docker Image
-        # docker run --rm home_guardian:test
-        run: docker --version

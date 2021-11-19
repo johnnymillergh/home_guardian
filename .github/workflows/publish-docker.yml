@@ -20,7 +20,7 @@ jobs:
         run: |
           echo Current tag name: $TAG_NAME
           echo steps.vars.outputs.tag = ${{ steps.vars.outputs.tag }}
-      - name: Display OS architecture
+      - name: Display Host OS architecture
         run: uname -a
       - name: Setup Docker for multiple platform (linux/arm/v7)
         run: |
