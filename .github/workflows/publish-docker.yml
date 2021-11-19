@@ -11,6 +11,15 @@ jobs:
     name: Docker builx
     steps:
       - uses: actions/checkout@v2.1.0
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Check output
+        env:
+          TAG_NAME: ${{ steps.vars.outputs.tag }}
+        run: |
+          echo Current tag name: $TAG_NAME
+          echo steps.vars.outputs.tag = ${{ steps.vars.outputs.tag }}
       - name: Display OS architecture
         run: uname -a
       - name: Setup Docker for multiple platform (linux/arm/v7)
@@ -25,17 +34,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
         run: docker login $registry -u $username -p $password
-      - name: Build Docker image
+      - name: Build and Push Docker image
         env:
           registry: ghcr.io
           image_name: ${{ github.repository }}/home_guardian
-        run: docker buildx build --platform linux/arm/v7 -t $registry/$image_name:$GITHUB_REF_NAME-x86 .
-      - name: Push Docker image
-        env:
-          registry: ghcr.io
-          image_name: ${{ github.repository }}/home_guardian
-        run: docker push $registry/$image_name:$GITHUB_REF_NAME-x86
+          TAG_NAME: ${{ steps.vars.outputs.tag }}
+        run: docker buildx build --platform linux/arm/v7 --push -t $registry/$image_name:$TAG_NAME-buster .
       - name: List Docker image
         env:
           registry: ghcr.io
-        run: docker image list | grep $registry
+          image_name: ${{ github.repository }}/home_guardian
+          TAG_NAME: ${{ steps.vars.outputs.tag }}
+        run: docker buildx imagetools inspect $registry/$image_name:$TAG_NAME-buster
