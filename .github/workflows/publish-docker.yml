@@ -29,7 +29,15 @@ jobs:
           run: |
             uname -a
             echo ::set-output name=uname::$(uname -a)
-            docker login ghcr.io -u $username -p $password
-            docker build -t $registry/$image_name:$GITHUB_REF_NAME.
-            docker push $registry/$image_name:$GITHUB_REF_NAME
-            docker image list
+      - name: Get the output
+        # Echo the `uname` output parameter from the `runcmd` step
+        run: |
+          echo "The uname output was ${{ steps.runcmd.outputs.uname }}"
+      - name: Docker registry login [ghcr.io]
+        run: docker login ghcr.io -u $username -p $password
+      - name: Build Docker image
+        run: docker build -t $registry/$image_name:$GITHUB_REF_NAME .
+      - name: Push Docker image
+        run: docker push $registry/$image_name:$GITHUB_REF_NAME
+      - name: List Docker image
+        run: docker image list
