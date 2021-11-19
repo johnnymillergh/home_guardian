@@ -14,11 +14,6 @@ jobs:
       - uses: uraimo/run-on-arch-action@v2.0.5
         name: Run commands
         id: runcmd
-        env:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          image_name: ${{ github.repository }}/home_guardian
         with:
           arch: armv7
           distro: ubuntu18.04
@@ -34,10 +29,20 @@ jobs:
         run: |
           echo "The uname output was ${{ steps.runcmd.outputs.uname }}"
       - name: Docker registry login [ghcr.io]
-        run: docker login ghcr.io -u $username -p $password
+        env:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        run: docker login $registry -u $username -p $password
       - name: Build Docker image
+        env:
+          registry: ghcr.io
+          image_name: ${{ github.repository }}/home_guardian
         run: docker build -t $registry/$image_name:$GITHUB_REF_NAME .
       - name: Push Docker image
+        env:
+          registry: ghcr.io
+          image_name: ${{ github.repository }}/home_guardian
         run: docker push $registry/$image_name:$GITHUB_REF_NAME
       - name: List Docker image
         run: docker image list
