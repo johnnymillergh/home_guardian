@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2.1.0
       - name: Display OS architecture
         run: uname -a
-      - name: Setup Docker for multiple platform (linux/amd64,linux/arm64,linux/arm/v7)
+      - name: Setup Docker for multiple platform (linux/arm/v7)
         run: |
           docker buildx create --name multiple_platform_builder
           docker buildx use multiple_platform_builder
@@ -28,7 +28,7 @@ jobs:
         env:
           registry: ghcr.io
           image_name: ${{ github.repository }}/home_guardian
-        run: docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t $registry/$image_name:$GITHUB_REF_NAME-x86 .
+        run: docker buildx build --platform linux/arm/v7 -t $registry/$image_name:$GITHUB_REF_NAME-x86 .
       - name: Push Docker image
         env:
           registry: ghcr.io
