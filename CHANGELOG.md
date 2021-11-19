@@ -1,3 +1,11 @@
+# [1.0.2](https://github.com/johnnymillergh/home_guardian/compare/1.0.1...1.0.2) (2021-11-19)
+
+
+### Build
+* **$Docker:** change base image to `python:3.10-slim-buster` ([f6ffdd5](https://github.com/johnnymillergh/home_guardian/commit/f6ffdd5ffc559b69e8d4ea0771002b0a8a540b42))* **$GitHub:** build on armv7 arch ([42f1b2f](https://github.com/johnnymillergh/home_guardian/commit/42f1b2fe477c2fa4146ce5761a2d9d5028502086))
+
+
+
 # [1.0.1](https://github.com/johnnymillergh/home_guardian/compare/1.0.0...1.0.1) (2021-11-18)
 
 
