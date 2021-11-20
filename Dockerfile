@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster AS base
+FROM --platform=$BUILDPLATFORM python:3.10-slim-buster AS base
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
