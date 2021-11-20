@@ -5,3 +5,4 @@
 !Pipfile
 !Pipfile.lock
 !home_guardian
+!docker-entrypoint.sh

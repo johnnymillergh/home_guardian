@@ -12,15 +12,14 @@ services:
       - /dev/video0:/dev/video0
     environment:
       LOG_LEVEL: "DEBUG"
-      EMAIL_MUTED: true
+      EMAIL_MUTED: "true"
       MAIL_USERNAME: "DEFAULT_MAIL_USERNAME"
       MAIL_PASSWORD: "DEFAULT_MAIL_PASSWORD"
-      HEADLESS: true
+      HEADLESS: "true"
       TZ: Asia/Hong_Kong
     volumes:
       - ~/docker-file-mapping/home_guardian:/app/home_guardian/data
-    command:
-      - detect
+    command: python -m home_guardian detect
 
 # Docker run command:
 #docker run \

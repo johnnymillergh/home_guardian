@@ -1,5 +1,4 @@
-#!/bin/bash
-FROM --platform=$BUILDPLATFORM python:3.10-slim-buster AS base
+FROM python:3.10-slim-buster AS base
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -36,7 +35,8 @@ WORKDIR /app
 
 # Install application into container
 COPY . .
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Run the executable
-ENTRYPOINT ["python", "-m", "home_guardian"]
-CMD ["detect"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["python", "-m", "home_guardian", "detect"]
