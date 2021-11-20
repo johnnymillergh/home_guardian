@@ -37,8 +37,8 @@ jobs:
       - name: Build and Push Docker image
         env:
           TAG_NAME: ${{ steps.vars.outputs.tag }}
-        run: docker buildx build --platform linux/arm/v7 --push -t $registry/$image_name:$TAG_NAME-buster .
-      - name: List Docker image
+        run: docker buildx build --platform linux/arm/v7 --push -t $registry/$image_name:$TAG_NAME-buster -t $registry/$image_name:latest .
+      - name: Inspect Docker image
         env:
           TAG_NAME: ${{ steps.vars.outputs.tag }}
         run: docker buildx imagetools inspect $registry/$image_name:$TAG_NAME-buster
