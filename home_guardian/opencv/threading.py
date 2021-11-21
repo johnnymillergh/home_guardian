@@ -3,9 +3,8 @@ from __future__ import annotations
 from threading import Lock, Thread
 from typing import Any
 
-import cv2.cv2 as cv2
-from cv2.cv2 import VideoCapture
-from cv2.mat_wrapper import Mat
+import cv2
+import numpy as np
 from loguru import logger
 
 
@@ -26,7 +25,7 @@ class VideoCaptureThreading:
         """
         self._thread: Thread = Thread(target=self._thread_loop, args=())
         self._src: int = src
-        self._video_capture: VideoCapture = VideoCapture(self._src)
+        self._video_capture: cv2.VideoCapture = cv2.VideoCapture(self._src)
         self.set(cv2.CAP_PROP_FRAME_WIDTH, width).set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         # `_grabbed` is a boolean indicating if the frame is available or not
         self._grabbed, self._frame = self._video_capture.read()
@@ -73,7 +72,7 @@ class VideoCaptureThreading:
                 self._frame = frame
         logger.warning("Stopped video capture loop. Thread: {}", self._thread)
 
-    def read(self) -> tuple[bool, Mat]:
+    def read(self) -> tuple[bool, np.ndarray]:
         """
         Read the frame from the video stream.
 

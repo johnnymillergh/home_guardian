@@ -1,8 +1,7 @@
 import datetime
 import os
 
-import cv2.cv2 as cv2
-from cv2.cv2 import CascadeClassifier
+import cv2
 from cv2.data import haarcascades
 from loguru import logger
 
@@ -29,7 +28,7 @@ def collect_data(username: str) -> None:
     Detect and take photo.
     :return: when exception is raised, return None.
     """
-    face = CascadeClassifier(_haarcascade_frontalface_default)
+    face = cv2.CascadeClassifier(_haarcascade_frontalface_default)
     try:
         vid_cap: VideoCaptureThreading = VideoCaptureThreading(0).start()
     except Exception as e:
@@ -49,13 +48,13 @@ def collect_data(username: str) -> None:
 
 
 @throttle(3)
-def _process_frame(cascade_classifier: CascadeClassifier, frame, username: str) -> None:
+def _process_frame(cascade_classifier: cv2.CascadeClassifier, frame, username: str) -> None:
     executor.submit(_async_process_frame, cascade_classifier, frame, username)
 
 
 @logger.catch
 def _async_process_frame(
-    cascade_classifier: CascadeClassifier, frame, username: str
+    cascade_classifier: cv2.CascadeClassifier, frame, username: str
 ) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = cascade_classifier.detectMultiScale(gray_frame)

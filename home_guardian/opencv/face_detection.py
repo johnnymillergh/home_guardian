@@ -1,9 +1,7 @@
 import datetime
 import os
 
-import cv2.cv2 as cv2
-from cv2.cv2 import CascadeClassifier
-from cv2.mat_wrapper import Mat
+import cv2
 from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
@@ -24,7 +22,7 @@ logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
 
 _headless: bool = application_conf.get_bool("headless")
 
-face = CascadeClassifier(haarcascade_frontalface_default)
+face = cv2.CascadeClassifier(haarcascade_frontalface_default)
 _recognizer = cv2.face.LBPHFaceRecognizer_create()
 try:
     _recognizer.read(f"{get_data_dir()}/trainer.yml")
@@ -56,12 +54,12 @@ def detect_and_take_photo() -> None:
 
 
 @throttle(3)
-def process_frame(frame: Mat) -> None:
+def process_frame(frame) -> None:
     executor.submit(async_process_frame, frame)
 
 
 @logger.catch
-def async_process_frame(frame: Mat) -> None:
+def async_process_frame(frame) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face.detectMultiScale(gray_frame)
     for (x, y, w, h) in faces:

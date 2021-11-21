@@ -1,7 +1,7 @@
 import os
-from typing import Any
+from typing import Any, Tuple, List
 
-import cv2.cv2 as cv2
+import cv2
 import numpy as np
 from loguru import logger
 from PIL import Image
@@ -13,17 +13,17 @@ from home_guardian.repository.model.trained_face import TrainedFace
 from home_guardian.repository.trained_face_repository import save_or_update
 
 
-def _get_face_features_and_labels() -> tuple[list[np.ndarray], list]:
+def _get_face_features_and_labels() -> Tuple[List[np.ndarray], list]:
     detector = cv2.CascadeClassifier(haarcascade_frontalface_default)
     datasets_path: str = get_training_datasets_dir()
-    image_paths: list[str] = [
+    image_paths: List[str] = [
         os.path.join(datasets_path, f) for f in os.listdir(datasets_path)
     ]
     logger.info(
         f"Face training datasets path: {datasets_path}, image_paths: {image_paths}"
     )
-    face_features: list[np.ndarray] = []
-    labels: list[Any] = []
+    face_features: List[np.ndarray] = []
+    labels: List[Any] = []
     for image_path in image_paths:
         logger.debug(f"Image path: {image_path}")
         for root, dirs, files in os.walk(image_path):
