@@ -55,9 +55,7 @@ def build_message(
     :param picture_path: The path to the picture to attach.
     """
     content: MIMEText = MIMEText(
-        render_template(template_name, render_dict),
-        "html",
-        "utf-8",
+        render_template(template_name, render_dict), "html", "utf-8",
     )
     message: MIMEMultipart = MIMEMultipart("related")
     message["Subject"] = Header(subject, "utf-8").encode()

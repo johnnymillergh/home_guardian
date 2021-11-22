@@ -20,7 +20,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends gcc
 RUN apt-get install -y libhdf5-dev libhdf5-serial-dev
 RUN apt-get install -y libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5
 RUN apt-get install -y libatlas-base-dev
-RUN apt-get install -y libjasper-dev
 
 # Install python dependencies in /.venv
 COPY Pipfile .
