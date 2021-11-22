@@ -52,6 +52,6 @@ jobs:
           docker buildx use multiple_platform_builder
           docker buildx inspect --bootstrap
       - name: Build Docker image
-        run: docker buildx build --platform linux/arm/v7 -t $image_name:test-buster .
-      - name: Inspect Docker image
-        run: docker buildx imagetools inspect $image_name:test-buster
+        run: docker buildx build --platform linux/arm/v7 --output=type=docker --tag $image_name:test-buster .
+      - name: List Docker image
+        run: docker image list | grep $image_name
