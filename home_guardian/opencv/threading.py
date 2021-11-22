@@ -3,7 +3,7 @@ from __future__ import annotations
 from threading import Lock, Thread
 from typing import Any
 
-import cv2
+import cv2.cv2 as cv2
 import numpy as np
 from loguru import logger
 

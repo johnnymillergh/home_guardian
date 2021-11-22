@@ -1,7 +1,7 @@
 import datetime
 import os
 
-import cv2
+import cv2.cv2 as cv2
 from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
@@ -9,7 +9,7 @@ from home_guardian.configuration.application_configuration import application_co
 from home_guardian.configuration.thread_pool_configuration import executor
 from home_guardian.function_collection import get_data_dir
 from home_guardian.message.email import send_email
-from home_guardian.opencv.haar_model import haarcascade_frontalface_default
+from home_guardian.opencv.detector_recognizer import face_detector, face_recognizer
 from home_guardian.opencv.threading import VideoCaptureThreading
 from home_guardian.repository.detected_face_repository import save
 from home_guardian.repository.model.detected_face import DetectedFace
@@ -21,13 +21,6 @@ os.makedirs(_detected_face_dir, exist_ok=True)
 logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
 
 _headless: bool = application_conf.get_bool("headless")
-
-face = cv2.CascadeClassifier(haarcascade_frontalface_default)
-_recognizer = cv2.face.LBPHFaceRecognizer_create()
-try:
-    _recognizer.read(f"{get_data_dir()}/trainer.yml")
-except Exception:
-    logger.exception("Cannot read trainer.yml!")
 
 
 def detect_and_take_photo() -> None:
@@ -43,7 +36,7 @@ def detect_and_take_photo() -> None:
     while True:
         grabbed, frame = vid_cap.read()
         if not _headless:
-            cv2.imshow("Capture", frame)
+            cv2.imshow("Detect and Take Photo", frame)
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
         if not grabbed:
@@ -61,13 +54,13 @@ def process_frame(frame) -> None:
 @logger.catch
 def async_process_frame(frame) -> None:
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face.detectMultiScale(gray_frame)
+    faces = face_detector.detectMultiScale(gray_frame)
     for (x, y, w, h) in faces:
         logger.info(
             "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
         )
         # recognize? deep learned model predict keras tensorflow pytorch scikit learn
-        label, confidence = _recognizer.predict(gray_frame)
+        label, confidence = face_recognizer.predict(gray_frame)
         logger.info(f"Predicted face. Label: {label}, confidence: {confidence}")
         if 2 <= confidence <= 85:
             trained_face: TrainedFace = get_by_id(_id=label)

@@ -1,20 +1,19 @@
 import os
-from typing import Any, Tuple, List
+from typing import Any, List, Tuple
 
-import cv2
+import cv2.cv2 as cv2
 import numpy as np
 from loguru import logger
 from PIL import Image
 
 from home_guardian.common.time import elapsed_time
 from home_guardian.function_collection import get_data_dir, get_training_datasets_dir
-from home_guardian.opencv.haar_model import haarcascade_frontalface_default
+from home_guardian.opencv.detector_recognizer import face_detector
 from home_guardian.repository.model.trained_face import TrainedFace
 from home_guardian.repository.trained_face_repository import save_or_update
 
 
 def _get_face_features_and_labels() -> Tuple[List[np.ndarray], list]:
-    detector = cv2.CascadeClassifier(haarcascade_frontalface_default)
     datasets_path: str = get_training_datasets_dir()
     image_paths: List[str] = [
         os.path.join(datasets_path, f) for f in os.listdir(datasets_path)
@@ -38,7 +37,7 @@ def _get_face_features_and_labels() -> Tuple[List[np.ndarray], list]:
                 logger.info(
                     f"Getting face features with the username: {username}, id: {trained_face}"
                 )
-                face_array = detector.detectMultiScale(img_numpy)
+                face_array = face_detector.detectMultiScale(img_numpy)
                 for (x, y, w, h) in face_array:
                     face_features.append(img_numpy[y : y + h, x : x + w])
                     labels.append(trained_face.get_id())
