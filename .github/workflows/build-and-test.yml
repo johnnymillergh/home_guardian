@@ -20,7 +20,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2.2.2
         with:
-          python-version: "3.7.3"
+          python-version: "3.7"
           architecture: x64
       - name: Install Dependencies with [pipenv]
         run: |
@@ -39,7 +39,6 @@ jobs:
 
   docker-builx-smoke-test:
     runs-on: ubuntu-latest
-    name: Docker builx
     env:
       image_name: ${{ github.repository }}/home_guardian
     steps:
