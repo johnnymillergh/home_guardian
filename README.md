@@ -19,8 +19,8 @@ Here are the highlights of **home_guardian**:
 
 1. Inherited from modern and the latest newest Python technologies:
 
-   `Python` - [![Python](https://img.shields.io/badge/Python-v3.10.0-blue)](https://www.python.org/downloads/release/python-3100/)
-   `OpenCV` - [![OpenCV](https://img.shields.io/badge/OpenCV-v4.5.4.58-red)](https://pypi.org/project/opencv-python/4.5.4.58/)
+   `Python` - [![Python](https://img.shields.io/badge/Python-v3.7.3-blue)](https://www.python.org/downloads/release/python-373/)
+   `OpenCV` - [![OpenCV](https://img.shields.io/badge/OpenCV-v4.5.3.56-red)](https://www.piwheels.org/project/opencv-python/)
    
 2. Sending Email via [Tom](https://mail.tom.com/) Email Service, email template engine powered by [Jinjia2](https://jinja2docs.readthedocs.io/en/stable/)
 
@@ -40,7 +40,7 @@ Here are the highlights of **home_guardian**:
 
 8. Git hooks that run all the above with [pre-commit](https://pre-commit.com/)
 
-9. Deployment ready with [Docker](https://docker.com/)
+9. ~~Deployment ready with [Docker](https://docker.com/)~~
 
 10. Continuous Integration with [GitHub Actions](https://github.com/features/actions)
 
@@ -67,18 +67,34 @@ Here are the highlights of **home_guardian**:
 
 ## Setup
 
-1. Install dependencies
+```sh
+# Install pipx if pipenv and cookiecutter are not installed
+$ python3 -m pip install pipx
+$ python3 -m pipx ensurepath
 
-   ```shell
-   $ pipenv install --dev
-   ```
+# Install pipenv using pipx
+$ pipx install pipenv
 
-2. Setup pre-commit and pre-push hooks
+# Install dependencies
+$ pipenv install --dev
 
-   ```shell
-   $ pipenv run pre-commit install -t pre-commit
-   $ pipenv run pre-commit install -t pre-push
-   ```
+# Setup pre-commit and pre-push hooks
+$ pipenv run pre-commit install -t pre-commit
+$ pipenv run pre-commit install -t pre-push
+```
+
+### Install prerequisites on your Raspberry Pi
+
+The Raspberry Pi requires that you install a few system packages before you get started:
+
+This has been tested on Raspberry Pi 4B, armv7l Linux 5.10.63-v7l+, Raspbian GNU/Linux 10 (buster).
+
+```sh
+$ sudo apt-get install libhdf5-dev libhdf5-serial-dev libhdf5-103
+$ sudo apt-get install libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5
+$ sudo apt-get install libatlas-base-dev
+$ sudo apt-get install libjasper-dev
+```
 
 ## Useful Commands
 
