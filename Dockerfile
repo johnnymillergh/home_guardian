@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM python:3.10-slim-buster AS base
+FROM --platform=$BUILDPLATFORM python:3.7.3-slim AS base
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -17,6 +17,10 @@ FROM base AS python-deps
 RUN python -m pip install --upgrade pip setuptools wheel
 RUN pip install pipenv
 RUN apt-get update && apt-get install -y --no-install-recommends gcc
+RUN apt-get install -y libhdf5-dev libhdf5-serial-dev libhdf5-103
+RUN apt-get install -y libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5
+RUN apt-get install -y libatlas-base-dev
+RUN apt-get install -y libjasper-dev
 
 # Install python dependencies in /.venv
 COPY Pipfile .

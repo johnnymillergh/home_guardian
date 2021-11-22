@@ -20,7 +20,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2.2.2
         with:
-          python-version: "3.10.0"
+          python-version: "3.7.3"
           architecture: x64
       - name: Install Dependencies with [pipenv]
         run: |
