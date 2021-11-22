@@ -1,5 +1,6 @@
 import datetime
 import os
+from time import sleep
 
 import cv2.cv2 as cv2
 import numpy as np
@@ -38,6 +39,7 @@ def collect_data(username: str) -> None:
         if not grabbed:
             break
         _process_frame(frame, username)
+        sleep(0.04)
     vid_cap.stop()
     cv2.destroyAllWindows()
 

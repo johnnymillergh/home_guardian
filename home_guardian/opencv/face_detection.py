@@ -1,5 +1,6 @@
 import datetime
 import os
+from time import sleep
 
 import cv2.cv2 as cv2
 from loguru import logger
@@ -42,6 +43,7 @@ def detect_and_take_photo() -> None:
         if not grabbed:
             break
         process_frame(frame)
+        sleep(0.04)
     vid_cap.stop()
     cv2.destroyAllWindows()
 
