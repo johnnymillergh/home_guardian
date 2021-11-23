@@ -13,7 +13,7 @@
 
 # Exit immediately if a command exits with a non-zero status.
 # https://stackoverflow.com/questions/19622198/what-does-set-e-mean-in-a-bash-script
-set -e
+set +e
 
 ############### Configurable Environment Variables ################
 readonly logLevel=INFO
@@ -49,7 +49,7 @@ function now() {
 #   Trace log.
 #######################################
 function logTrace() {
-    printf "$(now) TRACE --- %s\n" "$1"
+    printf "$(now) TRACE --- %b\n" "$1"
 }
 
 #######################################
@@ -60,7 +60,7 @@ function logTrace() {
 #   Info log.
 #######################################
 function logInfo() {
-    printf "$(now)  \e[32mINFO --- %s\e[0m\n" "$1"
+    printf "$(now)  \e[32mINFO --- %b\e[0m\n" "$1"
 }
 
 #######################################
@@ -71,7 +71,7 @@ function logInfo() {
 #   Warn log.
 #######################################
 function logWarn() {
-    printf "$(now)  \e[33mWARN --- %s\e[0m\n" "$1"
+    printf "$(now)  \e[33mWARN --- %b\e[0m\n" "$1"
 }
 
 #######################################
@@ -82,7 +82,7 @@ function logWarn() {
 #   Error log.
 #######################################
 function logError() {
-    printf "$(now) \e[31mERROR --- %s\e[0m\n" "$1"
+    printf "$(now) \e[31mERROR --- %b\e[0m\n" "$1"
 }
 
 #######################################
@@ -121,21 +121,21 @@ function showVersion() {
 function executePreRunPhase() {
     showVersion
     logWarn "[PRE-RUN] Current Git branch: $(gitCurrentBranch), pulling codes from Git…"
-    gitPull || {
-        gitPullResult=$?
-        logError "[PRE-RUN] Git pull failed. Exit code: $gitPullResult" >&2
-        exit $gitPullResult
-    }
-    gitPullExecutionResult=$?
-    if [ "$gitPullExecutionResult" -eq 0 ]; then
-        logInfo "[PRE-RUN] Git pull success. gitPullExecutionResult: $gitPullExecutionResult"
-    fi
+    gitPull
     logWarn "[PRE-RUN] Current directory: $(pwd), list of current directory:"
     ls -l -h -a
+    pipenvOutput=`pipenv shell 2>&1`
+    activated=`echo $pipenvOutput | grep -c "already activated"`
+    if [ "$activated" -eq 1 ];
+    then
+        logWarn "[PRE-RUN] $pipenvOutput"
+    else
+        logInfo "[PRE-RUN] Just activated pipenv virtual environment"
+    fi
 }
 
 function executeRunPhase() {
-    logInfo $'Runtime environment variables:\nLOG_LEVEL=$logLevel,\nEMAIL_MUTED=$emailMuted,\nHEADLESS=$headless,\nEMAIL_USERNAME=$emailUsername,\nEMAIL_PASSWORD=$emailPassword,\nSTART_UP_MODE=$startUpMode'
+    logInfo "Runtime environment variables:\nLOG_LEVEL=$logLevel,\nEMAIL_MUTED=$emailMuted,\nHEADLESS=$headless,\nEMAIL_USERNAME=$emailUsername,\nEMAIL_PASSWORD=$emailPassword,\nSTART_UP_MODE=$startUpMode"\
     # shellcheck disable=SC2086
     LOG_LEVEL=$logLevel EMAIL_MUTED=$emailMuted HEADLESS=$headless EMAIL_USERNAME=$emailUsername EMAIL_PASSWORD=$emailPassword python3 -m home_guardian $startUpMode || {
         homeGuardianResult=$?
