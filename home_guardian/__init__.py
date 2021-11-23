@@ -1,6 +1,9 @@
 from home_guardian.configuration.application_configuration import (
     configure as application_configure,
 )
+from home_guardian.configuration.apscheduler_configuration import (
+    configure as apscheduler_configure,
+)
 from home_guardian.configuration.loguru_configuration import (
     configure as loguru_configure,
 )
@@ -13,6 +16,7 @@ from home_guardian.message.email import __init__
 application_configure()
 loguru_configure()
 thread_pool_configure()
+apscheduler_configure()
 
 # Initialization
 __init__()

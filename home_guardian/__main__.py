@@ -3,6 +3,9 @@ import sys
 from loguru import logger
 
 from home_guardian.common.startup import StartupMode
+from home_guardian.configuration.apscheduler_configuration import (
+    cleanup as apscheduler_cleanup
+)
 from home_guardian.configuration.thread_pool_configuration import (
     cleanup as thread_pool_cleanup,
 )
@@ -32,6 +35,7 @@ def _main() -> None:
         logger.warning("Cleaning up…")
         thread_pool_cleanup()
         email_cleanup()
+        apscheduler_cleanup()
 
 
 if __name__ == "__main__":

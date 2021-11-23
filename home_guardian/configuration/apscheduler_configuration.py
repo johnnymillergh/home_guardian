@@ -1,0 +1,48 @@
+import pytz
+from apscheduler.executors.pool import ThreadPoolExecutor
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.schedulers.background import BackgroundScheduler
+from loguru import logger
+
+from home_guardian.function_collection import get_cpu_count, get_data_dir
+
+_db_path: str = f"{get_data_dir()}/home_guardian.db"
+_job_store = {
+    "default": SQLAlchemyJobStore(url=f"sqlite:///{_db_path}")
+}
+_executors = {
+    "default": ThreadPoolExecutor(get_cpu_count())
+}
+_job_defaults = {
+    "coalesce": False,
+    "max_instances": 3
+}
+scheduler: BackgroundScheduler = BackgroundScheduler(
+    jobstore=_job_store,
+    executors=_executors,
+    job_defaults=_job_defaults,
+    timezone=pytz.timezone("Asia/Hong_Kong")
+)
+
+
+def configure() -> None:
+    """
+    Configure APScheduler.
+    """
+    logger.warning(f"APScheduler configured. {scheduler}")
+
+
+def cleanup() -> None:
+    """
+    Clean up APScheduler.
+    """
+    scheduler.shutdown()
+    logger.warning(f"The scheduler was shut down completely, {scheduler}")
+
+
+@scheduler.scheduled_job("interval", minutes=1)
+def timed_job() -> None:
+    logger.info("This job is run every 1 minute.")
+
+
+scheduler.start()

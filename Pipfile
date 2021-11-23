@@ -24,6 +24,7 @@ jinja2 = "==3.0.3"
 numpy= "==1.21.4"
 pillow = "==8.4.0"
 apscheduler = "==3.8.1"
+sqlalchemy = "==1.4.27"
 
 [dev-packages]
 black = "==19.10b0"
