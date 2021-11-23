@@ -23,6 +23,7 @@ pyhocon = "==0.3.58"
 jinja2 = "==3.0.3"
 numpy= "==1.21.4"
 pillow = "==8.4.0"
+apscheduler = "==3.8.1"
 
 [dev-packages]
 black = "==19.10b0"
