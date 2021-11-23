@@ -1,14 +1,13 @@
 import pytz
 from apscheduler.executors.pool import ThreadPoolExecutor
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from loguru import logger
 
-from home_guardian.function_collection import get_cpu_count, get_data_dir
+from home_guardian.function_collection import get_cpu_count
 
-_db_path: str = f"{get_data_dir()}/home_guardian.db"
 _job_store = {
-    "default": SQLAlchemyJobStore(url=f"sqlite:///{_db_path}")
+    "default": MemoryJobStore()
 }
 _executors = {
     "default": ThreadPoolExecutor(get_cpu_count())
