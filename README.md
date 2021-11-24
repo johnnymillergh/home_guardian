@@ -83,11 +83,11 @@ $ pipenv run pre-commit install -t pre-commit
 $ pipenv run pre-commit install -t pre-push
 ```
 
-### Install prerequisites on your Raspberry Pi
+### [Install prerequisites on your Raspberry Pi](https://www.pyimagesearch.com/2018/09/19/pip-install-opencv/#pip-install-opencv-rpi)
 
 The Raspberry Pi requires that you install a few system packages before you get started:
 
-This has been tested on Raspberry Pi 4B, armv7l Linux 5.10.63-v7l+, Raspbian GNU/Linux 10 (buster).
+This has been tested on Raspberry Pi 4B, armv7l Linux 5.10.63-v7l+, Raspberry Pi OS GNU/Linux 10 (buster).
 
 ```sh
 $ sudo apt-get install libhdf5-dev libhdf5-serial-dev libhdf5-103
@@ -139,7 +139,9 @@ Feel free to dive in! [Open an issue](https://github.com/johnnymillergh/home_gua
 
 ### Contributors
 
-This project exists thanks to all the people who contribute. 
+This project exists thanks to all the [people who contribute](https://github.com/johnnymillergh/home_guardian/graphs/contributors). 
+
+![GitHub Contributors Image](https://contrib.rocks/image?repo=johnnymillergh/home_guardian)
 
 - Johnny Miller [[@johnnymillergh](https://github.com/johnnymillergh)]
 - …
