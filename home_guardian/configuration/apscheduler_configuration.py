@@ -38,6 +38,6 @@ def cleanup() -> None:
     logger.warning(f"The scheduler was shut down completely, {scheduler}")
 
 
-@scheduler.scheduled_job("interval", seconds=3)
+@scheduler.scheduled_job("interval", minutes=1)
 def timed_job() -> None:
     logger.info("This job is run every 1 minute.")
