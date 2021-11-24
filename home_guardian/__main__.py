@@ -4,7 +4,7 @@ from loguru import logger
 
 from home_guardian.common.startup import StartupMode
 from home_guardian.configuration.apscheduler_configuration import (
-    cleanup as apscheduler_cleanup
+    cleanup as apscheduler_cleanup,
 )
 from home_guardian.configuration.thread_pool_configuration import (
     cleanup as thread_pool_cleanup,
