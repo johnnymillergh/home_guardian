@@ -16,6 +16,7 @@
 set +e
 
 ############### Configurable Environment Variables ################
+readonly skipGitPull=true
 readonly logLevel=INFO
 readonly emailMuted=true
 readonly headless=false
@@ -120,22 +121,32 @@ function showVersion() {
 
 function executePreRunPhase() {
     showVersion
-    logWarn "[PRE-RUN] Current Git branch: $(gitCurrentBranch), pulling codes from Git…"
-    gitPull
+    if [ "$skipGitPull" = false ]; then
+        logWarn "[PRE-RUN] Current Git branch: $(gitCurrentBranch), pulling codes from Git…"
+        gitPull || {
+            logError "[PRE-RUN] Git pull failed. gitPullExecutionResult: $?" >&2
+            exit 1
+        }
+        gitPullExecutionResult=$?
+        if [ "$gitPullExecutionResult" -eq 0 ]; then
+            logInfo "[PRE-RUN] Git pull success. gitPullExecutionResult: $gitPullExecutionResult"
+        fi
+    else
+        logWarn "[PRE-RUN] Current Git branch: $(gitCurrentBranch), skipped Git Pull"
+    fi
     logWarn "[PRE-RUN] Current directory: $(pwd), list of current directory:"
     ls -l -h -a
-    pipenvOutput=`pipenv shell 2>&1`
-    activated=`echo $pipenvOutput | grep -c "already activated"`
-    if [ "$activated" -eq 1 ];
-    then
-        logWarn "[PRE-RUN] $pipenvOutput"
-    else
+    logInfo "[PRE-RUN] Checking pipenv virtual environment…"
+    pipenvOutput=$(pipenv shell 2>&1)
+    logWarn "[PRE-RUN] $pipenvOutput"
+    activated=$(echo "$pipenvOutput" | grep -c "already activated")
+    if [ "$activated" -ne 1 ]; then
         logInfo "[PRE-RUN] Just activated pipenv virtual environment"
     fi
 }
 
 function executeRunPhase() {
-    logInfo "Runtime environment variables:\nLOG_LEVEL=$logLevel,\nEMAIL_MUTED=$emailMuted,\nHEADLESS=$headless,\nEMAIL_USERNAME=$emailUsername,\nEMAIL_PASSWORD=$emailPassword,\nSTART_UP_MODE=$startUpMode"\
+    logInfo "Runtime environment variables:\nLOG_LEVEL=$logLevel,\nEMAIL_MUTED=$emailMuted,\nHEADLESS=$headless,\nEMAIL_USERNAME=$emailUsername,\nEMAIL_PASSWORD=$emailPassword,\nSTART_UP_MODE=$startUpMode"
     # shellcheck disable=SC2086
     LOG_LEVEL=$logLevel EMAIL_MUTED=$emailMuted HEADLESS=$headless EMAIL_USERNAME=$emailUsername EMAIL_PASSWORD=$emailPassword python3 -m home_guardian $startUpMode || {
         homeGuardianResult=$?
