@@ -1,8 +1,11 @@
 import datetime
 import os
+import pickle
 from time import sleep
+from typing import List, Tuple
 
 import cv2.cv2 as cv2
+import face_recognition
 from loguru import logger
 
 from home_guardian.common.debounce_throttle import throttle
@@ -10,18 +13,19 @@ from home_guardian.configuration.application_configuration import application_co
 from home_guardian.configuration.thread_pool_configuration import executor
 from home_guardian.function_collection import get_data_dir
 from home_guardian.message.email import send_email
-from home_guardian.opencv.detector_recognizer import face_detector, face_recognizer
+from home_guardian.opencv.detector_recognizer import face_detector
 from home_guardian.opencv.threading import VideoCaptureThreading
 from home_guardian.repository.detected_face_repository import save
 from home_guardian.repository.model.detected_face import DetectedFace
-from home_guardian.repository.model.trained_face import TrainedFace
-from home_guardian.repository.trained_face_repository import get_by_id
 
 _detected_face_dir = f"{get_data_dir()}/detection"
 os.makedirs(_detected_face_dir, exist_ok=True)
 logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
 
 _headless: bool = application_conf.get_bool("headless")
+
+with open(f"{get_data_dir()}/trained_model.pickle", "rb") as trained_model:
+    trained_model_data = pickle.loads(trained_model.read())
 
 
 def detect_and_take_photo() -> None:
@@ -55,30 +59,50 @@ def process_frame(frame) -> None:
 
 @logger.catch
 def async_process_frame(frame) -> None:
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_detector.detectMultiScale(gray_frame)
-    for (x, y, w, h) in faces:
-        logger.info(
-            "Detected face, axis(x,y) = ({},{}), width = {} px, h = {} px", x, y, w, h
+    # Detect the face_locations
+    face_locations: List[Tuple] = face_recognition.face_locations(frame)
+    if len(face_locations) == 0:
+        logger.debug("No face detected")
+        return
+    # compute the facial embeddings for each face bounding box
+    face_encodings: list = face_recognition.face_encodings(frame, face_locations)
+    names = []
+    # loop over the facial embeddings
+    for face_encoding in face_encodings:
+        # attempt to match each face in the input image to our known
+        # encodings
+        matches = face_recognition.compare_faces(
+            trained_model_data["face_encodings"], face_encoding
         )
-        # recognize? deep learned model predict keras tensorflow pytorch scikit learn
-        label, confidence = face_recognizer.predict(gray_frame)
-        logger.info(f"Predicted face. Label: {label}, confidence: {confidence}")
-        if 2 <= confidence <= 85:
-            trained_face: TrainedFace = get_by_id(_id=label)
-            text: str
-            if trained_face is not None:
-                text = trained_face.username
-            else:
-                text = "Unknown"
-            logger.info(
-                f"Recognized face. Label: {label}, confidence: {confidence}, text: {text}"
-            )
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            color = (255, 255, 255)
-            stroke = 2
-            cv2.putText(frame, text, (x, y), font, 1, color, stroke, cv2.LINE_AA)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # if face is not recognized, then print Unknown
+        name = "Unknown"
+        # check to see if we have found a match
+        if True in matches:
+            # find the indexes of all matched faces then initialize a
+            # dictionary to count the total number of times each face
+            # was matched
+            matched_idxs = [i for (i, b) in enumerate(matches) if b]
+            counts = {}
+            # loop over the matched indexes and maintain a count for
+            # each recognized face face
+            for i in matched_idxs:
+                name = trained_model_data["names"][i]
+                counts[name] = counts.get(name, 0) + 1
+            # determine the recognized face with the largest number
+            # of votes (note: in the event of an unlikely tie Python
+            # will select first entry in the dictionary)
+            name = max(counts, key=counts.get)
+            logger.debug(f"Determined name: {name}, counts: {counts.get}")
+        # update the list of names
+        names.append(name)
+    # loop over the recognized faces
+    for ((top, right, bottom, left), name) in zip(face_locations, names):
+        # draw the predicted face name on the image - color is in BGR
+        cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 225), 2)
+        y = top - 15 if top - 15 > 15 else top + 15
+        cv2.putText(
+            frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2
+        )
         save_frame(frame)
 
 
