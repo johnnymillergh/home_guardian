@@ -23,8 +23,9 @@ RUN apt-get install -y libatlas-base-dev
 
 # Install python dependencies in /.venv
 COPY Pipfile .
-COPY Pipfile.lock .
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
+# Not to copy `Pipfile.lock`, cuz the main target platform is for `Raspberry Pi OS`
+# COPY Pipfile.lock .
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --skip-lock --deploy
 
 
 FROM base AS runtime
