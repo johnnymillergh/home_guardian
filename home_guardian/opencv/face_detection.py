@@ -26,9 +26,8 @@ _headless: bool = application_conf.get_bool("headless")
 try:
     with open(f"{get_data_dir()}/trained_model.pickle", "rb") as trained_model:
         trained_model_data = pickle.loads(trained_model.read())
-except FileNotFoundError as e:
+except FileNotFoundError:
     logger.exception(f"Failed to load trained_model.pickle!")
-    raise e
 
 
 def detect_and_take_photo() -> None:
