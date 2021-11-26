@@ -13,7 +13,6 @@ from home_guardian.configuration.application_configuration import application_co
 from home_guardian.configuration.thread_pool_configuration import executor
 from home_guardian.function_collection import get_data_dir
 from home_guardian.message.email import send_email
-from home_guardian.opencv.detector_recognizer import face_detector
 from home_guardian.opencv.threading import VideoCaptureThreading
 from home_guardian.repository.detected_face_repository import save
 from home_guardian.repository.model.detected_face import DetectedFace
@@ -24,8 +23,12 @@ logger.warning(f"Made the directory, _detected_face_dir: {_detected_face_dir}")
 
 _headless: bool = application_conf.get_bool("headless")
 
-with open(f"{get_data_dir()}/trained_model.pickle", "rb") as trained_model:
-    trained_model_data = pickle.loads(trained_model.read())
+try:
+    with open(f"{get_data_dir()}/trained_model.pickle", "rb") as trained_model:
+        trained_model_data = pickle.loads(trained_model.read())
+except FileNotFoundError as e:
+    logger.exception(f"Failed to load trained_model.pickle!")
+    raise e
 
 
 def detect_and_take_photo() -> None:
