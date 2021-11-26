@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
@@ -38,7 +38,7 @@ jobs:
         run: pipenv run pytest --cov
 
   docker-builx-smoke-test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     env:
       image_name: ${{ github.repository }}/home_guardian
     steps:

@@ -6,7 +6,7 @@ on:
 
 jobs:
   docker-builx:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     name: Build and Push Image by Docker builx
     env:
       registry: ghcr.io
